@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const app = express()
 const PORT = 8080
 
-app.use('../static', express.static(path.join(__dirname, 'static')))
+app.use('/static', express.static(path.join(__dirname, '../static')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
