@@ -8,13 +8,15 @@
   "license": "None",
   "private": true,
   "scripts": {
-    "start": "node server.js",
+    "start": "node server/server.js",
+    "build": "parcel build ./client/index.html --public-url /static --out-dir static",
     "fix": "standard --fix"
   },
   "dependencies": {
     "express": "^4.16.3"
   },
   "devDependencies": {
+    "parcel-bundler": "^1.9.7",
     "standard": "^12.0.1"
   }
 }
