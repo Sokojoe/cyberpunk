@@ -1,0 +1,10 @@
+{
+  "name": "cyberpunk",
+  "version": "1.0.0",
+  "description": "A roguelike game played in browser",
+  "main": "index.js",
+  "repository": "http://github.com/Sokojoe/cyberpunk.git",
+  "author": "Sokojoe <sokojoey@gmail.com>",
+  "license": "None",
+  "private": true
+}
