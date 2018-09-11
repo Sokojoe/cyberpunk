@@ -1,1 +1,2 @@
-console.log('hello world')
+import loginManager from './login.js'
+loginManager()
