@@ -11,7 +11,7 @@ router.use(bodyParser.json())
 router.post('/register', function (req, res) {
   const hashedPassword = bcrypt.hashSync(req.body.password, 8)
 
-  database.addPlayer(req.body.username, hashedPassword)
+  database.addAccount(req.body.username, hashedPassword)
 
   // create a token
   const token = jwt.sign({ username: req.body.username }, 'secret', {
@@ -22,23 +22,23 @@ router.post('/register', function (req, res) {
 })
 
 router.post('/login', function (req, res) {
-  const player = database.getPlayer(req.body.username)
+  database.getAccount(req.body.username).then(player => {
+    if (!player) {
+      return res.status(404).send('No user found.')
+    }
 
-  if (!player) {
-    return res.status(404).send('No user found.')
-  }
+    const passwordIsValid = bcrypt.compareSync(req.body.password, player.password)
 
-  const passwordIsValid = bcrypt.compareSync(req.body.password, player.password)
+    if (!passwordIsValid) {
+      return res.status(401).send('Unauthorized, password invalid.')
+    }
 
-  if (!passwordIsValid) {
-    return res.status(401).send('Unauthorized, password invalid.')
-  }
+    const token = jwt.sign({ username: req.body.username }, 'secret', {
+      expiresIn: 86400 // expires in 24 hours
+    })
 
-  const token = jwt.sign({ username: req.body.username }, 'secret', {
-    expiresIn: 86400 // expires in 24 hours
+    res.status(200).send({ auth: true, token: token })
   })
-
-  res.status(200).send({ auth: true, token: token })
 })
 
 function verifyToken (req, res, next) {
