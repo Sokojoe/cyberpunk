@@ -1,2 +1,2 @@
 import loginManager from './login.js'
-loginManager()
+loginManager.initializePage()

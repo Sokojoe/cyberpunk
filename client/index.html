@@ -6,10 +6,10 @@
 <body>
   <div id="loginForm" style="display:none">
  Username:
- <input type="text" name="username">
+ <input type="text" id="username">
  Password:
- <input type="text" name="password">
- <button type="Login" value="Login">Login</button>
+ <input type="password" id="password">
+ <button id="loginButton" type="Login" value="Login" onclick="window.attemptLogin()">Login</button>
 </div>
 <div id="authForm" style="display:none">
 Congratulations, you are logged in!

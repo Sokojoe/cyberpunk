@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const app = express()
-const PORT = 8080
+const PORT = 6930
 
 const AuthController = require('./authentication')
 app.use('/api/auth', AuthController.router)
