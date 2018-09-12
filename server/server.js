@@ -1,10 +1,11 @@
 const express = require('express')
 const path = require('path')
-const database = require('./database')
 const bodyParser = require('body-parser')
 const app = express()
 const PORT = 8080
 
+const AuthController = require('./authentication')
+app.use('/api/auth', AuthController.router)
 app.use('/static', express.static(path.join(__dirname, '../static')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -13,15 +14,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../static/index.html'))
 })
 
-app.post('/account', (req, res) => {
-  const username = req.body.username
-  database.addPlayer(username)
-  res.send(`Account with username ${username} has been created.`)
-})
-
-app.get('/account', (req, res) => {
-  const players = database.getPlayers()
-  res.send(players)
+app.get('/onlyAuthorized', AuthController.verifyToken, (req, res) => {
+  res.send('Authorization working!')
 })
 
 app.listen(PORT, () => {

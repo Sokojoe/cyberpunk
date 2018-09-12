@@ -13,8 +13,10 @@
     "fix": "standard --fix"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0"
   },
   "devDependencies": {
     "parcel-bundler": "^1.9.7",

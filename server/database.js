@@ -6,12 +6,12 @@ class Database {
     this.data.players = {}
   }
 
-  addPlayer (username) {
-    this.data.players[username] = { 'username': username }
+  addPlayer (username, password) {
+    this.data.players[username] = { 'username': username, 'password': password }
   }
 
-  getPlayers () {
-    return this.data.players
+  getPlayer (username) {
+    return this.data.players[username]
   }
 }
 

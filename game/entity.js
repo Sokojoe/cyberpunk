@@ -1,32 +1,31 @@
 
 class Entity {
-  constructor(name, maxHealth){
-    this.type = "Entity"
+  constructor (name, maxHealth) {
+    this.type = 'Entity'
     this.name = name
     this.maxHealth = maxHealth
     this.health = this.maxHealth
   }
 
-  takeDamage(damage, deathCallback){
+  takeDamage (damage, deathCallback) {
     this.health -= damage
-    if (this.health <= 0){
+    if (this.health <= 0) {
       this.health = 0
       deathCallback()
     }
   }
 
-  gainHealth(health){
+  gainHealth (health) {
     this.health += health
-    if (this.health >= maxHealth){
-      this.health = maxHealth
+    if (this.health >= this.maxHealth) {
+      this.health = this.maxHealth
     }
   }
 
-  increaseMaxHealth(gain){
+  increaseMaxHealth (gain) {
     this.maxHealth += gain
     this.gainHealth(gain)
   }
-
 }
 
 module.exports = Entity
