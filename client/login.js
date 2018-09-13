@@ -13,23 +13,28 @@ function showHideLogin () {
   }
 }
 
-function attemptLogin() {
-  const username = document.getElementById("username").value
-  const password = document.getElementById("password").value
+function attemptLogin () {
+  const username = document.getElementById('username').value
+  const password = document.getElementById('password').value
   const url = window.location + 'api/auth/login'
-  axios.post(url, {'username': username, 'password': password}).then((res)=>{
+  axios.post(url, { 'username': username, 'password': password }).then((res) => {
     const authKey = res.data.token
-    localStorage.setItem('authKey', authKey)
+    window.localStorage.setItem('authKey', authKey)
     showHideLogin()
-  }).catch((err)=>{
+  }).catch((err) => {
     console.log(err)
   })
 }
 
-function initializePage() {
-  window.attemptLogin = attemptLogin
+function logout () {
+  window.localStorage.removeItem('authKey')
   showHideLogin()
 }
 
+function initializePage () {
+  window.attemptLogin = attemptLogin
+  window.logout = logout
+  showHideLogin()
+}
 
-module.exports = {initializePage}
+module.exports = { initializePage }

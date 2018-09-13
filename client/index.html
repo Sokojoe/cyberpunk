@@ -9,10 +9,11 @@
  <input type="text" id="username">
  Password:
  <input type="password" id="password">
- <button id="loginButton" type="Login" value="Login" onclick="window.attemptLogin()">Login</button>
+ <button id="loginButton" onclick="window.attemptLogin()">Login</button>
 </div>
 <div id="authForm" style="display:none">
 Congratulations, you are logged in!
+<button id="logoutButton" onclick="window.logout()">Logout</button>
 </div>
 <script src="./index.js"></script>
 </body>
