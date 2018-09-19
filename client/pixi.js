@@ -1,40 +1,51 @@
 import * as PIXI from 'pixi.js'
 import tile from './resources/sprites/floor.png'
-import player from './resources/sprites/Player.png'
+import playerSprite from './resources/sprites/Player.png'
 
-function onTileClick (tile, Player) {
-  console.log(tile.coordinates)
-  movePlayer(Player, tile.coordinates)
-}
+class View {
+  constructor () {
+    this.app = new PIXI.Application()
 
-function movePlayer (Player, coordinates) {
-  Player.x = coordinates.x * 32
-  Player.y = coordinates.y * 32
-}
+    const canvasLocation = document.getElementById('pixiCanvas')
+    canvasLocation.appendChild(this.app.view)
 
-function initializePixi () {
-  const app = new PIXI.Application()
-  const canvasLocation = document.getElementById('pixiCanvas')
-
-  let Player = PIXI.Sprite.fromImage(player)
-  let container = new PIXI.Container()
-
-  for (let x = 0; x < 20; x++) {
-    for (let y = 0; y < 15; y++) {
-      let floorTile = PIXI.Sprite.fromImage(tile)
-      floorTile.x = x * 32
-      floorTile.y = y * 32
-      floorTile.coordinates = { 'x': x, 'y': y }
-      floorTile.interactive = true
-      floorTile.buttonMode = true
-      floorTile.on('pointerdown', () => { onTileClick(floorTile, Player) })
-      container.addChild(floorTile)
-    }
+    this.renderMap()
+    this.createPlayer()
   }
-  app.stage.addChild(container)
-  app.stage.addChild(Player)
 
-  canvasLocation.appendChild(app.view)
+  renderMap () {
+    let container = new PIXI.Container()
+
+    for (let x = 0; x < 20; x++) {
+      for (let y = 0; y < 15; y++) {
+        let floorTile = PIXI.Sprite.fromImage(tile)
+        floorTile.x = x * 32
+        floorTile.y = y * 32
+        floorTile.coordinates = { 'x': x, 'y': y }
+        floorTile.interactive = true
+        floorTile.buttonMode = true
+        floorTile.on('pointerdown', () => { this.onTileClick(floorTile) })
+        container.addChild(floorTile)
+      }
+    }
+
+    this.app.stage.addChild(container)
+  }
+
+  createPlayer () {
+    this.player = PIXI.Sprite.fromImage(playerSprite)
+    this.app.stage.addChild(this.player)
+  }
+
+  setPlayerLocation (coordinates) {
+    this.player.x = coordinates.x * 32
+    this.player.y = coordinates.y * 32
+  }
+
+  onTileClick (tile) {
+    console.log(tile.coordinates)
+    this.setPlayerLocation(tile.coordinates)
+  }
 }
 
-module.exports = { initializePixi }
+module.exports = { View }

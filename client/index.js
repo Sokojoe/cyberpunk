@@ -1,5 +1,5 @@
 import loginManager from './login.js'
-import pixiManager from './pixi.js'
+import View from './pixi.js'
 
 loginManager.initializePage()
-pixiManager.initializePixi()
+const view = new View()
