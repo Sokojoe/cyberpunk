@@ -2,7 +2,7 @@
 
 const MongoClient = require('mongodb').MongoClient
 
-const url = 'mongodb://localhost:27017'
+const url = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@cyber1-l7ckw.mongodb.net`
 
 const dbName = 'cyberpunk'
 
