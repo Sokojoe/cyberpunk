@@ -11,14 +11,20 @@ router.use(bodyParser.json())
 router.post('/register', function (req, res) {
   const hashedPassword = bcrypt.hashSync(req.body.password, 8)
 
-  database.addAccount(req.body.username, hashedPassword)
+  database.getAccount(req.body.username).then(account => {
+    if (account) {
+      return res.status(403).send('username already exists')
+    }
 
-  // create a token
-  const token = jwt.sign({ username: req.body.username }, 'secret', {
-    expiresIn: 86400 // expires in 24 hours
+    database.addAccount(req.body.username, hashedPassword)
+
+    // create a token
+    const token = jwt.sign({ username: req.body.username }, 'secret', {
+      expiresIn: 86400 // expires in 24 hours
+    })
+
+    res.status(200).send({ auth: true, token: token })
   })
-
-  res.status(200).send({ auth: true, token: token })
 })
 
 router.post('/login', function (req, res) {

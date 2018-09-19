@@ -2,12 +2,12 @@ import * as PIXI from 'pixi.js'
 import tile from './resources/sprites/floor.png'
 import player from './resources/sprites/Player.png'
 
-function onTileClick(tile, Player){
-  console.log(tile.coordinates);
+function onTileClick (tile, Player) {
+  console.log(tile.coordinates)
   movePlayer(Player, tile.coordinates)
 }
 
-function movePlayer(Player, coordinates) {
+function movePlayer (Player, coordinates) {
   Player.x = coordinates.x * 32
   Player.y = coordinates.y * 32
 }
@@ -24,10 +24,10 @@ function initializePixi () {
       let floorTile = PIXI.Sprite.fromImage(tile)
       floorTile.x = x * 32
       floorTile.y = y * 32
-      floorTile.coordinates = {'x': x, 'y': y}
+      floorTile.coordinates = { 'x': x, 'y': y }
       floorTile.interactive = true
       floorTile.buttonMode = true
-      floorTile.on('pointerdown', ()=>{onTileClick(floorTile, Player)})
+      floorTile.on('pointerdown', () => { onTileClick(floorTile, Player) })
       container.addChild(floorTile)
     }
   }
