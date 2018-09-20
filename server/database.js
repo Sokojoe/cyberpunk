@@ -39,6 +39,11 @@ class Database {
     const collection = this.db.collection('instances')
     collection.updateOne({ 'username': username }, { $set: instance }, { upsert: true })
   }
+
+  getInstance (username) {
+    const collection = this.db.collection('instances')
+    return collection.findOne({ 'username': username })
+  }
 }
 
 module.exports = new Database()

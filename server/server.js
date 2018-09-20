@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const app = express()
+const database = require('./database')
 const PORT = 6930
 
 const AuthController = require('./authentication')
@@ -12,6 +13,13 @@ app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../static/index.html'))
+})
+
+app.get('/instance', AuthController.verifyToken, (req, res) => {
+  database.getInstance(req.username).then((instance) => {
+    delete instance['_id']
+    res.send(instance)
+  })
 })
 
 app.get('/onlyAuthorized', AuthController.verifyToken, (req, res) => {

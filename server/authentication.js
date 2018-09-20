@@ -49,7 +49,6 @@ router.post('/login', function (req, res) {
 
 function verifyToken (req, res, next) {
   const token = req.headers['authtoken']
-  console.log(req.headers)
   if (!token) { return res.status(403).send({ auth: false, message: 'No token provided.' }) }
 
   jwt.verify(token, 'secret', function (err, decoded) {
