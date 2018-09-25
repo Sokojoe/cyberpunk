@@ -10,7 +10,7 @@ class View {
     canvasLocation.appendChild(this.app.view)
   }
 
-  renderMap (width, height, baseTile) {
+  renderMap (width, height, baseTile, moveFunction) {
     this.mapWidth = width
     this.mapHeight = height
 
@@ -24,7 +24,7 @@ class View {
         floorTile.coordinates = { 'x': x, 'y': (height - 1) - y }
         floorTile.interactive = true
         floorTile.buttonMode = true
-        floorTile.on('pointerdown', () => { this.onTileClick(floorTile) })
+        floorTile.on('pointerdown', () => { moveFunction(floorTile.coordinates) })
         container.addChild(floorTile)
       }
     }
@@ -34,21 +34,15 @@ class View {
     this.mapContainer = container
   }
 
-  createPlayer (x, y) {
+  createPlayer () {
     this.app.stage.removeChild(this.player)
     this.player = PIXI.Sprite.fromImage(playerSprite)
     this.app.stage.addChild(this.player)
-    this.setPlayerLocation({ x: x, y: y })
   }
 
   setPlayerLocation (coordinates) {
     this.player.x = coordinates.x * 32
     this.player.y = (this.mapHeight - coordinates.y - 1) * 32
-  }
-
-  onTileClick (tile) {
-    console.log(tile.coordinates)
-    this.setPlayerLocation(tile.coordinates)
   }
 }
 

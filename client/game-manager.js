@@ -7,23 +7,43 @@ class GameManager {
     this.view = view
   }
 
-  loadGame (authtoken, username) {
+  loadGame (authtoken) {
     this.authtoken = authtoken
+
     const url = window.location + 'instance'
     axios.get(url, { headers: { 'authtoken': authtoken } })
       .then(res => {
+        this.username = res.data.username
+
         const mapHeight = res.data.room.height
         const mapWidth = res.data.room.width
         const baseTile = res.data.room.baseTile
-        this.view.renderMap(mapWidth, mapHeight, baseTile)
+        this.view.renderMap(mapWidth, mapHeight, baseTile, (coordinates) => { this.setMoveCoordinates(coordinates) })
 
-        this.username = res.data.username
-        const username = this.username
-        const playerX = res.data.entities[username].x
-        const playerY = res.data.entities[username].y
-        this.view.createPlayer(playerX, playerY)
+        this.view.createPlayer()
+        this.loadEntities(res.data.entities)
       })
-      .catch(err => console.error(err))
+  }
+
+  loadEntities (entities) {
+    const username = this.username
+    const playerX = entities[username].x
+    const playerY = entities[username].y
+    this.view.setPlayerLocation({ x: playerX, y: playerY })
+  }
+
+  setMoveCoordinates (coordinates) {
+    console.log(coordinates)
+    this.move = coordinates
+    this.sendTurn()
+  }
+
+  sendTurn () {
+    const url = window.location + 'instance'
+    axios.post(url, { move: this.move }, { headers: { 'authtoken': this.authtoken } })
+      .then((res) => {
+        this.loadEntities(res.data.entities)
+      })
   }
 }
 
