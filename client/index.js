@@ -1,5 +1,7 @@
 import loginManager from './login.js'
-import { View } from './pixi.js'
+import GameManager from './game-manager'
+import View from './pixi'
 
-loginManager.initializePage()
-View()
+const view = new View()
+const gameManager = new GameManager(view)
+loginManager.initializePage(gameManager)

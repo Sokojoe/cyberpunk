@@ -5,6 +5,7 @@ function showHideLogin () {
   const authForm = document.getElementById('authForm')
   const authKey = window.localStorage.getItem('authKey')
   if (authKey) {
+    window.gameManager.loadGame(authKey)
     loginForm.style.display = 'none'
     authForm.style.display = 'block'
   } else {
@@ -31,9 +32,10 @@ function logout () {
   showHideLogin()
 }
 
-function initializePage () {
+function initializePage (gameManager) {
   window.attemptLogin = attemptLogin
   window.logout = logout
+  window.gameManager = gameManager
   showHideLogin()
 }
 
