@@ -1,8 +1,8 @@
 const Entity = require('./entity')
 
 class Player extends Entity {
-  constructor (name) {
-    super(name, 100)
+  constructor (name, x, y) {
+    super(name, 100, x, y)
     this.type = 'Player'
   }
 }

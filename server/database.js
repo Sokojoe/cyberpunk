@@ -5,6 +5,7 @@ const url = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PAS
 const dbName = 'cyberpunk'
 
 const rooms = require('../game/rooms/rooms')
+const Player = require('../game/entitys/player')
 
 class Database {
   constructor () {
@@ -31,9 +32,12 @@ class Database {
   }
 
   setInstance (username, room) {
+    const entities = {}
+    entities[username] = new Player(username, 0, 0)
     const instance = {
       'username': username,
-      'room': room
+      'room': room,
+      'entities': entities
     }
 
     const collection = this.db.collection('instances')

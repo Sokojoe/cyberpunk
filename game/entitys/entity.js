@@ -1,10 +1,12 @@
 
 class Entity {
-  constructor (name, maxHealth) {
+  constructor (name, maxHealth, x, y) {
     this.type = 'Entity'
     this.name = name
     this.maxHealth = maxHealth
     this.health = this.maxHealth
+    this.x = x
+    this.y = y
   }
 
   takeDamage (damage, deathCallback) {
