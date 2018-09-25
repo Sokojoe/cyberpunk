@@ -2,9 +2,11 @@ import * as PIXI from 'pixi.js'
 import playerSprite from './resources/sprites/Player.png'
 import tile from './resources/sprites/floor.png'
 
+const TILE_SIZE = 64
+
 class View {
   constructor () {
-    this.app = new PIXI.Application()
+    this.app = new PIXI.Application({width: 1400, height: 900})
 
     const canvasLocation = document.getElementById('pixiCanvas')
     canvasLocation.appendChild(this.app.view)
@@ -19,8 +21,10 @@ class View {
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
         let floorTile = PIXI.Sprite.fromImage(tile)
-        floorTile.x = x * 32
-        floorTile.y = y * 32
+        floorTile.height = TILE_SIZE
+        floorTile.width = TILE_SIZE
+        floorTile.x = x * TILE_SIZE
+        floorTile.y = y * TILE_SIZE
         floorTile.coordinates = { 'x': x, 'y': (height - 1) - y }
         floorTile.interactive = true
         floorTile.buttonMode = true
@@ -36,13 +40,15 @@ class View {
 
   createPlayer () {
     this.app.stage.removeChild(this.player)
-    this.player = PIXI.Sprite.fromImage(playerSprite)
+    this.player = PIXI.Sprite.fromImage(playerSprite, false)
+    this.player.height = TILE_SIZE
+    this.player.width = TILE_SIZE
     this.app.stage.addChild(this.player)
   }
 
   setPlayerLocation (coordinates) {
-    this.player.x = coordinates.x * 32
-    this.player.y = (this.mapHeight - coordinates.y - 1) * 32
+    this.player.x = coordinates.x * TILE_SIZE
+    this.player.y = (this.mapHeight - coordinates.y - 1) * TILE_SIZE
   }
 }
 
