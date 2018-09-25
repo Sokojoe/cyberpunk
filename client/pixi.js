@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
-import tile from './resources/sprites/floor.png'
 import playerSprite from './resources/sprites/Player.png'
+import tile from './resources/sprites/floor.png'
 
 class View {
   constructor () {
@@ -8,16 +8,13 @@ class View {
 
     const canvasLocation = document.getElementById('pixiCanvas')
     canvasLocation.appendChild(this.app.view)
-
-    this.renderMap()
-    this.createPlayer()
   }
 
-  renderMap () {
+  renderMap (width, height, baseTile) {
     let container = new PIXI.Container()
 
-    for (let x = 0; x < 20; x++) {
-      for (let y = 0; y < 15; y++) {
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
         let floorTile = PIXI.Sprite.fromImage(tile)
         floorTile.x = x * 32
         floorTile.y = y * 32
@@ -28,11 +25,14 @@ class View {
         container.addChild(floorTile)
       }
     }
-
+    // Remove the old map
+    this.app.stage.removeChild(this.mapContainer)
     this.app.stage.addChild(container)
+    this.mapContainer = container
   }
 
   createPlayer () {
+    this.app.stage.removeChild(this.player)
     this.player = PIXI.Sprite.fromImage(playerSprite)
     this.app.stage.addChild(this.player)
   }
