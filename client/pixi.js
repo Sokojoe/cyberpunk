@@ -11,6 +11,9 @@ class View {
   }
 
   renderMap (width, height, baseTile) {
+    this.mapWidth = width
+    this.mapHeight = height
+
     let container = new PIXI.Container()
 
     for (let x = 0; x < width; x++) {
@@ -18,7 +21,7 @@ class View {
         let floorTile = PIXI.Sprite.fromImage(tile)
         floorTile.x = x * 32
         floorTile.y = y * 32
-        floorTile.coordinates = { 'x': x, 'y': y }
+        floorTile.coordinates = { 'x': x, 'y': (height - 1) - y }
         floorTile.interactive = true
         floorTile.buttonMode = true
         floorTile.on('pointerdown', () => { this.onTileClick(floorTile) })
@@ -31,15 +34,16 @@ class View {
     this.mapContainer = container
   }
 
-  createPlayer () {
+  createPlayer (x, y) {
     this.app.stage.removeChild(this.player)
     this.player = PIXI.Sprite.fromImage(playerSprite)
     this.app.stage.addChild(this.player)
+    this.setPlayerLocation({ x: x, y: y })
   }
 
   setPlayerLocation (coordinates) {
     this.player.x = coordinates.x * 32
-    this.player.y = coordinates.y * 32
+    this.player.y = (this.mapHeight - coordinates.y - 1) * 32
   }
 
   onTileClick (tile) {

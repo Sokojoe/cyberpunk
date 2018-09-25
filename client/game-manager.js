@@ -7,7 +7,7 @@ class GameManager {
     this.view = view
   }
 
-  loadGame (authtoken) {
+  loadGame (authtoken, username) {
     this.authtoken = authtoken
     const url = window.location + 'instance'
     axios.get(url, { headers: { 'authtoken': authtoken } })
@@ -16,7 +16,12 @@ class GameManager {
         const mapWidth = res.data.room.width
         const baseTile = res.data.room.baseTile
         this.view.renderMap(mapWidth, mapHeight, baseTile)
-        this.view.createPlayer(0, 0)
+
+        this.username = res.data.username
+        const username = this.username
+        const playerX = res.data.entities[username].x
+        const playerY = res.data.entities[username].y
+        this.view.createPlayer(playerX, playerY)
       })
       .catch(err => console.error(err))
   }
