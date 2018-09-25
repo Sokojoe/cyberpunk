@@ -23,15 +23,17 @@ class Database {
     const collection = this.db.collection('accounts')
     collection.insertOne({ 'username': username, 'password': password })
 
-    this.setInstance(username, rooms['startRoom'])
+    this.createInstance(username, rooms['startRoom'])
+      .catch(err => console.error(err))
   }
 
   getAccount (username) {
     const collection = this.db.collection('accounts')
     return collection.findOne({ 'username': username })
+      .catch(err => console.error(err))
   }
 
-  setInstance (username, room) {
+  createInstance (username, room) {
     const entities = {}
     entities[username] = new Player(username, 0, 0)
     const instance = {
@@ -42,11 +44,19 @@ class Database {
 
     const collection = this.db.collection('instances')
     collection.updateOne({ 'username': username }, { $set: instance }, { upsert: true })
+      .catch(err => console.error(err))
+  }
+
+  updateInstance (username, instance) {
+    const collection = this.db.collection('instances')
+    collection.updateOne({ 'username': username }, { $set: instance }, { upsert: true })
+      .catch(err => console.error(err))
   }
 
   getInstance (username) {
     const collection = this.db.collection('instances')
     return collection.findOne({ 'username': username })
+      .catch(err => console.error(err))
   }
 }
 

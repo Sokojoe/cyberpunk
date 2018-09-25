@@ -22,8 +22,14 @@ app.get('/instance', AuthController.verifyToken, (req, res) => {
   })
 })
 
-app.get('/onlyAuthorized', AuthController.verifyToken, (req, res) => {
-  res.send('Authorization working!')
+app.post('/instance', AuthController.verifyToken, (req, res) => {
+  database.getInstance(req.username).then((instance) => {
+    const playerCoordinates = req.body.move
+    instance.entities[req.username].x = playerCoordinates.x
+    instance.entities[req.username].y = playerCoordinates.y
+    database.updateInstance(req.username, instance)
+    res.send(instance)
+  })
 })
 
 app.listen(PORT, () => {
