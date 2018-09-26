@@ -6,7 +6,7 @@ const TILE_SIZE = 64
 
 class View {
   constructor () {
-    this.app = new PIXI.Application({width: 1400, height: 900})
+    this.app = new PIXI.Application({ width: 1400, height: 900 })
 
     const canvasLocation = document.getElementById('pixiCanvas')
     canvasLocation.appendChild(this.app.view)

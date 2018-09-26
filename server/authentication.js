@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const database = require('./database')
 
+const SECRET = process.env.CYBER_SECRET
+
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
@@ -19,7 +21,7 @@ router.post('/register', function (req, res) {
     database.addAccount(req.body.username, hashedPassword)
 
     // create a token
-    const token = jwt.sign({ username: req.body.username }, 'secret', {
+    const token = jwt.sign({ username: req.body.username }, SECRET, {
       expiresIn: 86400 // expires in 24 hours
     })
 
@@ -39,7 +41,7 @@ router.post('/login', function (req, res) {
       return res.status(401).send('Unauthorized, password invalid.')
     }
 
-    const token = jwt.sign({ username: req.body.username }, 'secret', {
+    const token = jwt.sign({ username: req.body.username }, SECRET, {
       expiresIn: 86400 // expires in 24 hours
     })
 
@@ -51,7 +53,7 @@ function verifyToken (req, res, next) {
   const token = req.headers['authtoken']
   if (!token) { return res.status(403).send({ auth: false, message: 'No token provided.' }) }
 
-  jwt.verify(token, 'secret', function (err, decoded) {
+  jwt.verify(token, SECRET, function (err, decoded) {
     if (err) {
       return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' })
     }
