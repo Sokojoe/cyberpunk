@@ -4,6 +4,8 @@ import tile from './resources/sprites/floor.png'
 
 const TILE_SIZE = 64
 
+const END_TURN_BUTTON_COORDS = { x: 4, y: 10 }
+
 class View {
   constructor () {
     this.app = new PIXI.Application({ width: 1400, height: 900 })
@@ -27,13 +29,6 @@ class View {
         floorTile.width = TILE_SIZE
         floorTile.x = x * TILE_SIZE
         floorTile.y = y * TILE_SIZE
-        floorTile.coordinates = { 'x': x, 'y': (height - 1) - y }
-        floorTile.interactive = true
-        floorTile.buttonMode = true
-        floorTile.on('pointerdown', () => {
-          this.playerMove = floorTile.coordinates
-          this.renderEndTurnButton(TILE_SIZE * 4, TILE_SIZE * 10)
-        })
         container.addChild(floorTile)
       }
     }
@@ -44,9 +39,29 @@ class View {
     // Render map
     this.app.stage.addChild(container)
     this.mapContainer = container
+  }
 
-    // Render end turn button
-    this.renderEndTurnButton(TILE_SIZE * 4, TILE_SIZE * 10)
+  renderValidMoveSquares (coordinateMap) {
+    let container = new PIXI.Container()
+    container.x = this.player.x
+    container.y = this.player.y
+
+    for (const coord in coordinateMap) {
+      let moveSquare = new PIXI.Graphics()
+      moveSquare.beginFill(0x00FF00)
+      moveSquare.fillAlpha = 0.15
+      moveSquare.drawRect(coordinateMap[coord].x * TILE_SIZE, -coordinateMap[coord].y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+      moveSquare.interactive = true
+      moveSquare.buttonMode = true
+      moveSquare.on('pointerdown', () => {
+        this.playerMove = { x: this.playerCoords.x + coordinateMap[coord].x, y: this.playerCoords.y + coordinateMap[coord].y }
+        this.renderEndTurnButton()
+      })
+      container.addChild(moveSquare)
+    }
+    this.app.stage.removeChild(this.validMoveSquares)
+    this.validMoveSquares = container
+    this.app.stage.addChild(this.validMoveSquares)
   }
 
   createPlayer () {
@@ -60,9 +75,13 @@ class View {
   setPlayerLocation (coordinates) {
     this.player.x = coordinates.x * TILE_SIZE
     this.player.y = (this.mapHeight - coordinates.y - 1) * TILE_SIZE
+
+    this.playerCoords = { x: coordinates.x, y: coordinates.y }
+    // Render end turn button
+    this.renderEndTurnButton()
   }
 
-  renderEndTurnButton (x, y) {
+  renderEndTurnButton () {
     // Remove old button
     this.app.stage.removeChild(this.endTurnButton)
 
@@ -71,8 +90,8 @@ class View {
 
     // Create new button
     let container = new PIXI.Container()
-    container.x = x
-    container.y = y
+    container.x = END_TURN_BUTTON_COORDS.x * TILE_SIZE
+    container.y = END_TURN_BUTTON_COORDS.y * TILE_SIZE
     let background = new PIXI.Graphics()
     let text = new PIXI.Text()
     text.y = btnHeight / 4
@@ -86,14 +105,21 @@ class View {
       background.beginFill(0xFFFF00)
       container.interactive = true
       container.buttonMode = true
+      this.app.stage.removeChild(this.validMoveSquares)
       container.on('pointerdown', () => {
         this.moveFunction(this.playerMove)
         this.playerMove = null
-        this.renderEndTurnButton(x, y)
+        this.renderEndTurnButton()
       })
     } else {
       text.text = 'Move'
       background.beginFill(0x00FF00)
+      this.renderValidMoveSquares({
+        1: { x: 1, y: 0 },
+        2: { x: 0, y: 1 },
+        3: { x: -1, y: 0 },
+        4: { x: 0, y: -1 }
+      })
     }
     background.drawRect(0, 0, btnWidth, btnHeight)
 
