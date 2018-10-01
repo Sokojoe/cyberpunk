@@ -29,6 +29,7 @@ class GameManager {
     const username = this.username
     const playerX = entities[username].x
     const playerY = entities[username].y
+    this.view.playerMoveSet = entities[username].moveSet
     this.view.setPlayerLocation({ x: playerX, y: playerY })
   }
 

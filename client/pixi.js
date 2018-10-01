@@ -41,8 +41,9 @@ class View {
     this.mapContainer = container
   }
 
-  renderValidMoveSquares (coordinateMap) {
+  renderValidMoveSquares () {
     let container = new PIXI.Container()
+    const coordinateMap = this.playerMoveSet
     container.x = this.player.x
     container.y = this.player.y
 
@@ -64,7 +65,7 @@ class View {
     this.app.stage.addChild(this.validMoveSquares)
   }
 
-  createPlayer () {
+  createPlayer (moveSet) {
     this.app.stage.removeChild(this.player)
     this.player = PIXI.Sprite.fromImage(playerSprite, false)
     this.player.height = TILE_SIZE
@@ -114,12 +115,7 @@ class View {
     } else {
       text.text = 'Move'
       background.beginFill(0x00FF00)
-      this.renderValidMoveSquares({
-        1: { x: 1, y: 0 },
-        2: { x: 0, y: 1 },
-        3: { x: -1, y: 0 },
-        4: { x: 0, y: -1 }
-      })
+      this.renderValidMoveSquares()
     }
     background.drawRect(0, 0, btnWidth, btnHeight)
 

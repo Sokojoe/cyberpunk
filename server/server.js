@@ -3,6 +3,7 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const app = express()
 const database = require('./database')
+const moveValidator = require('../game/validators/moveValidator')
 const PORT = 6930
 
 const AuthController = require('./authentication')
@@ -18,6 +19,12 @@ app.get('/', (req, res) => {
 app.get('/instance', AuthController.verifyToken, (req, res) => {
   database.getInstance(req.username).then((instance) => {
     delete instance['_id']
+
+    // Calculate players valid move set
+    const player = instance.entities[req.username]
+    const validMoveSet = moveValidator(player, instance.room)
+    instance.entities[req.username].moveSet = validMoveSet
+
     res.send(instance)
   })
 })
@@ -28,6 +35,12 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
     instance.entities[req.username].x = playerCoordinates.x
     instance.entities[req.username].y = playerCoordinates.y
     database.updateInstance(req.username, instance)
+
+    // Calculate players valid move set
+    const player = instance.entities[req.username]
+    const validMoveSet = moveValidator(player, instance.room)
+    instance.entities[req.username].moveSet = validMoveSet
+
     res.send(instance)
   })
 })
