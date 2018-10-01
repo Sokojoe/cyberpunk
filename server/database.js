@@ -24,13 +24,14 @@ class Database {
     collection.insertOne({ 'username': username, 'password': password })
 
     this.createInstance(username, rooms['startRoom'])
-      .catch(err => console.error(err))
   }
 
   getAccount (username) {
     const collection = this.db.collection('accounts')
     return collection.findOne({ 'username': username })
-      .catch(err => console.error(err))
+      .catch(err => {
+        console.error(err)
+      })
   }
 
   createInstance (username, room) {

@@ -26,6 +26,8 @@ router.post('/register', function (req, res) {
     })
 
     res.status(200).send({ auth: true, token: token })
+  }).catch(err => {
+    console.error(err)
   })
 })
 
