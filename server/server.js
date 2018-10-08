@@ -22,7 +22,7 @@ app.get('/instance', AuthController.verifyToken, (req, res) => {
 
     // Calculate players valid move set
     const player = instance.entities[req.username]
-    const validMoveSet = moveValidator(player, instance.room)
+    const validMoveSet = moveValidator.calculateMoveSet(player, instance.room)
     instance.entities[req.username].moveSet = validMoveSet
 
     res.send(instance)
@@ -31,17 +31,26 @@ app.get('/instance', AuthController.verifyToken, (req, res) => {
 
 app.post('/instance', AuthController.verifyToken, (req, res) => {
   database.getInstance(req.username).then((instance) => {
-    const playerCoordinates = req.body.move
-    instance.entities[req.username].x = playerCoordinates.x
-    instance.entities[req.username].y = playerCoordinates.y
-    database.updateInstance(req.username, instance)
-
-    // Calculate players valid move set
+    const playerRequestedCoordinates = req.body.move
     const player = instance.entities[req.username]
-    const validMoveSet = moveValidator(player, instance.room)
-    instance.entities[req.username].moveSet = validMoveSet
 
-    res.send(instance)
+    // Validate player move is allowed
+    const move = { 'x': playerRequestedCoordinates.x - player.x, 'y': playerRequestedCoordinates.y - player.y }
+    const moveValid = moveValidator.isMoveValid(player, instance.room, move)
+
+    if (moveValid) {
+      player.x = playerRequestedCoordinates.x
+      player.y = playerRequestedCoordinates.y
+      database.updateInstance(req.username, instance)
+
+      // Calculate players valid move set
+      const validMoveSet = moveValidator.calculateMoveSet(player, instance.room)
+      instance.entities[req.username].moveSet = validMoveSet
+
+      res.send(instance)
+    } else {
+      res.status(400).send({ auth: false, message: 'Move is invalid' })
+    }
   })
 })
 
