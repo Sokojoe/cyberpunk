@@ -4,7 +4,8 @@ import tile from './resources/sprites/floor.png'
 
 const TILE_SIZE = 64
 
-const END_TURN_BUTTON_COORDS = { x: 4, y: 10 }
+const MOVE_BUTTON_COORDS = { x: 0, y: 10 }
+const END_TURN_BUTTON_COORDS = { x: 2, y: 10 }
 
 class View {
   constructor () {
@@ -14,16 +15,14 @@ class View {
     canvasLocation.appendChild(this.app.view)
   }
 
-  renderMap (width, height, baseTile, moveFunction) {
-    this.mapWidth = width
-    this.mapHeight = height
-    this.moveFunction = moveFunction
+  renderRoom (room) {
+    this.room = room
 
     let container = new PIXI.Container()
 
     // Create map
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
+    for (let x = 0; x < room.width; x++) {
+      for (let y = 0; y < room.height; y++) {
         let floorTile = PIXI.Sprite.fromImage(tile)
         floorTile.height = TILE_SIZE
         floorTile.width = TILE_SIZE
@@ -41,11 +40,78 @@ class View {
     this.mapContainer = container
   }
 
-  renderValidMoveSquares () {
+  renderEntities (entities, username) {
+    this.username = username
+    this.entities = entities
+
+    this.renderEntity(entities[username])
+  }
+
+  renderEntity (entity) {
+    this.app.stage.removeChild(this.player)
+    const sprite = PIXI.Sprite.fromImage(playerSprite, false)
+    sprite.height = TILE_SIZE
+    sprite.width = TILE_SIZE
+    sprite.x = TILE_SIZE * entity.x
+    sprite.y = (this.room.height - 1 - entity.y) * TILE_SIZE
+    this.player = sprite
+    this.app.stage.addChild(sprite)
+  }
+
+  renderMoveButton (uiManager) {
+    const btnHeight = TILE_SIZE
+    const btnWidth = TILE_SIZE * 2
+
     let container = new PIXI.Container()
-    const coordinateMap = this.playerMoveSet
-    container.x = this.player.x
-    container.y = this.player.y
+    container.x = MOVE_BUTTON_COORDS.x * TILE_SIZE
+    container.y = MOVE_BUTTON_COORDS.y * TILE_SIZE
+
+    let background = new PIXI.Graphics()
+    let text = new PIXI.Text()
+    text.y = btnHeight / 4
+    text.x = btnWidth / 8
+    text.style.align = 'center'
+    text.style.fontFamily = 'Arial'
+    text.style.fontSize = 22
+    text.text = 'Move'
+
+    // Render button
+    container.addChild(background)
+    container.addChild(text)
+    const moveButton = {}
+    moveButton.container = container
+    moveButton.setActive = (playerMoveSet) => {
+      uiManager.endTurnButton.setUnActive()
+      container.interactive = false
+      container.buttonMode = false
+      this.renderMoveOptions(moveButton, playerMoveSet)
+      this.app.stage.removeChild(container)
+      background.beginFill(0x00FF00)
+      background.drawRect(0, 0, btnWidth, btnHeight)
+
+      this.app.stage.addChild(container)
+    }
+    moveButton.setUnActive = (playerMoveSet) => {
+      this.app.stage.removeChild(container)
+      this.app.stage.removeChild(moveButton.moveOptions)
+      background.beginFill(0x0000FF)
+      background.drawRect(0, 0, btnWidth, btnHeight)
+      this.app.stage.addChild(container)
+      container.interactive = true
+      container.buttonMode = true
+      container.on('pointerdown', () => {
+        moveButton.setActive(playerMoveSet)
+      })
+      uiManager.endTurnButton.setActive()
+    }
+    return moveButton
+  }
+
+  renderMoveOptions (moveButton, coordinateMap) {
+    const player = this.entities[this.username]
+    let container = new PIXI.Container()
+    container.x = player.x * TILE_SIZE
+    container.y = (this.room.height - 1 - player.y) * TILE_SIZE
 
     for (const coord in coordinateMap) {
       let moveSquare = new PIXI.Graphics()
@@ -55,44 +121,25 @@ class View {
       moveSquare.interactive = true
       moveSquare.buttonMode = true
       moveSquare.on('pointerdown', () => {
-        this.playerMove = { x: this.playerCoords.x + coordinateMap[coord].x, y: this.playerCoords.y + coordinateMap[coord].y }
-        this.renderEndTurnButton()
+        moveButton.playerMove = { x: player.x + coordinateMap[coord].x, y: player.y + coordinateMap[coord].y }
+        moveButton.setUnActive(coordinateMap)
       })
       container.addChild(moveSquare)
     }
-    this.app.stage.removeChild(this.validMoveSquares)
-    this.validMoveSquares = container
-    this.app.stage.addChild(this.validMoveSquares)
+
+    this.app.stage.removeChild(moveButton.moveOptions)
+    moveButton.moveOptions = container
+    this.app.stage.addChild(container)
   }
 
-  createPlayer (moveSet) {
-    this.app.stage.removeChild(this.player)
-    this.player = PIXI.Sprite.fromImage(playerSprite, false)
-    this.player.height = TILE_SIZE
-    this.player.width = TILE_SIZE
-    this.app.stage.addChild(this.player)
-  }
-
-  setPlayerLocation (coordinates) {
-    this.player.x = coordinates.x * TILE_SIZE
-    this.player.y = (this.mapHeight - coordinates.y - 1) * TILE_SIZE
-
-    this.playerCoords = { x: coordinates.x, y: coordinates.y }
-    // Render end turn button
-    this.renderEndTurnButton()
-  }
-
-  renderEndTurnButton () {
-    // Remove old button
-    this.app.stage.removeChild(this.endTurnButton)
-
+  renderEndTurnButton (uiManager, submitTurn) {
     const btnHeight = TILE_SIZE
     const btnWidth = TILE_SIZE * 2
 
-    // Create new button
     let container = new PIXI.Container()
     container.x = END_TURN_BUTTON_COORDS.x * TILE_SIZE
     container.y = END_TURN_BUTTON_COORDS.y * TILE_SIZE
+
     let background = new PIXI.Graphics()
     let text = new PIXI.Text()
     text.y = btnHeight / 4
@@ -100,30 +147,34 @@ class View {
     text.style.align = 'center'
     text.style.fontFamily = 'Arial'
     text.style.fontSize = 22
-
-    if (this.playerMove) {
-      text.text = 'End Turn'
-      background.beginFill(0xFFFF00)
-      container.interactive = true
-      container.buttonMode = true
-      this.app.stage.removeChild(this.validMoveSquares)
-      container.on('pointerdown', () => {
-        this.moveFunction(this.playerMove)
-        this.playerMove = null
-        this.renderEndTurnButton()
-      })
-    } else {
-      text.text = 'Move'
-      background.beginFill(0x00FF00)
-      this.renderValidMoveSquares()
-    }
-    background.drawRect(0, 0, btnWidth, btnHeight)
+    text.text = 'EndTurn'
 
     // Render button
     container.addChild(background)
     container.addChild(text)
-    this.endTurnButton = container
-    this.app.stage.addChild(container)
+    const endTurnButton = {}
+    endTurnButton.container = container
+    endTurnButton.setActive = () => {
+      this.app.stage.removeChild(container)
+      background.beginFill(0x00FF00)
+      background.drawRect(0, 0, btnWidth, btnHeight)
+      container.interactive = true
+      container.buttonMode = true
+      container.on('pointerdown', () => {
+        submitTurn()
+        endTurnButton.setUnActive()
+      })
+      this.app.stage.addChild(container)
+    }
+    endTurnButton.setUnActive = () => {
+      container.interactive = false
+      container.buttonMode = false
+      this.app.stage.removeChild(container)
+      background.beginFill(0x0000FF)
+      background.drawRect(0, 0, btnWidth, btnHeight)
+      this.app.stage.addChild(container)
+    }
+    return endTurnButton
   }
 }
 

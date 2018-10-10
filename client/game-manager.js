@@ -5,6 +5,7 @@ import axios from 'axios'
 class GameManager {
   constructor (view) {
     this.view = view
+    this.uiManager = {}
   }
 
   loadGame (authtoken) {
@@ -14,36 +15,23 @@ class GameManager {
     axios.get(url, { headers: { 'authtoken': authtoken } })
       .then(res => {
         this.username = res.data.username
-
-        const mapHeight = res.data.room.height
-        const mapWidth = res.data.room.width
-        const baseTile = res.data.room.baseTile
-        this.view.renderMap(mapWidth, mapHeight, baseTile, (coordinates) => { this.setMoveCoordinates(coordinates) })
-
-        this.view.createPlayer()
-        this.loadEntities(res.data.entities)
+        this.view.renderRoom(res.data.room)
+        this.view.renderEntities(res.data.entities, res.data.username)
+        this.uiManager.moveButton = this.view.renderMoveButton(this.uiManager)
+        this.uiManager.endTurnButton = this.view.renderEndTurnButton(this.uiManager, () => this.sendTurn())
+        this.uiManager.moveButton.setActive(res.data.entities[res.data.username].moveSet)
+        this.uiManager.endTurnButton.setUnActive()
       })
   }
 
-  loadEntities (entities) {
-    const username = this.username
-    const playerX = entities[username].x
-    const playerY = entities[username].y
-    this.view.playerMoveSet = entities[username].moveSet
-    this.view.setPlayerLocation({ x: playerX, y: playerY })
-  }
-
-  setMoveCoordinates (coordinates) {
-    console.log(coordinates)
-    this.move = coordinates
-    this.sendTurn()
-  }
-
   sendTurn () {
+    const move = { move: this.uiManager.moveButton.playerMove }
     const url = window.location + 'instance'
-    axios.post(url, { move: this.move }, { headers: { 'authtoken': this.authtoken } })
+    axios.post(url, move, { headers: { 'authtoken': this.authtoken } })
       .then((res) => {
-        this.loadEntities(res.data.entities)
+        this.view.renderEntities(res.data.entities, res.data.username)
+        this.uiManager.moveButton.setActive(res.data.entities[res.data.username].moveSet)
+        this.uiManager.endTurnButton.setUnActive()
       })
   }
 }
