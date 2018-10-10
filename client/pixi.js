@@ -80,18 +80,29 @@ class View {
     container.addChild(text)
     const moveButton = {}
     moveButton.container = container
+
+    // Define button clicked
+    container.on('pointerdown', () => {
+      moveButton.setActive()
+    })
+
     moveButton.setActive = (playerMoveSet) => {
+      // Cache the players moveset incase function is called without moveSet
+      if (playerMoveSet) {
+        this.playerMoveSet = playerMoveSet
+      }
       uiManager.endTurnButton.setUnActive()
       container.interactive = false
       container.buttonMode = false
-      this.renderMoveOptions(moveButton, playerMoveSet)
+      this.renderMoveOptions(moveButton, this.playerMoveSet)
       this.app.stage.removeChild(container)
       background.beginFill(0x00FF00)
       background.drawRect(0, 0, btnWidth, btnHeight)
 
       this.app.stage.addChild(container)
     }
-    moveButton.setUnActive = (playerMoveSet) => {
+
+    moveButton.setUnActive = () => {
       this.app.stage.removeChild(container)
       this.app.stage.removeChild(moveButton.moveOptions)
       background.beginFill(0x0000FF)
@@ -99,9 +110,6 @@ class View {
       this.app.stage.addChild(container)
       container.interactive = true
       container.buttonMode = true
-      container.on('pointerdown', () => {
-        moveButton.setActive(playerMoveSet)
-      })
       uiManager.endTurnButton.setActive()
     }
     return moveButton
