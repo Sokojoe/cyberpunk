@@ -149,21 +149,24 @@ class View {
     text.style.fontSize = 22
     text.text = 'EndTurn'
 
-    // Render button
+    // Assemble button
     container.addChild(background)
     container.addChild(text)
     const endTurnButton = {}
     endTurnButton.container = container
+
+    // Add handler for when button is clicked
+    container.on('pointerdown', () => {
+      submitTurn()
+      endTurnButton.setUnActive()
+    })
+
     endTurnButton.setActive = () => {
       this.app.stage.removeChild(container)
       background.beginFill(0x00FF00)
       background.drawRect(0, 0, btnWidth, btnHeight)
       container.interactive = true
       container.buttonMode = true
-      container.on('pointerdown', () => {
-        submitTurn()
-        endTurnButton.setUnActive()
-      })
       this.app.stage.addChild(container)
     }
     endTurnButton.setUnActive = () => {
