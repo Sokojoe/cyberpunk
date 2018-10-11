@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node server/server.js",
     "build": "parcel build ./client/index.html --public-url /static --out-dir static",
-    "fix": "standard --fix"
+    "fix": "standard --fix",
+    "test": "ava"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -20,6 +21,7 @@
     "mongodb": "^3.1.4"
   },
   "devDependencies": {
+    "ava": "^0.25.0",
     "axios": "^0.18.0",
     "parcel-bundler": "^1.9.7",
     "pixi.js": "^4.8.2",
