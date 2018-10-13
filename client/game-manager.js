@@ -15,11 +15,19 @@ class GameManager {
     axios.get(url, { headers: { 'authtoken': authtoken } })
       .then(res => {
         this.username = res.data.username
+
+        // Find player id
+        for (const key in res.data.entities) {
+          if (res.data.entities[key].name === this.username) {
+            this.playerId = res.data.entities[key].id
+          }
+        }
+
         this.view.renderRoom(res.data.room)
-        this.view.renderEntities(res.data.entities, res.data.username)
+        this.view.renderEntities(res.data.entities)
         this.uiManager.moveButton = this.view.renderMoveButton(this.uiManager)
         this.uiManager.endTurnButton = this.view.renderEndTurnButton(this.uiManager, () => this.sendTurn())
-        this.uiManager.moveButton.setActive(res.data.entities[res.data.username].moveSet)
+        this.uiManager.moveButton.setActive(res.data.entities[this.playerId].moveSet)
         this.uiManager.endTurnButton.setUnActive()
       })
   }
@@ -29,8 +37,8 @@ class GameManager {
     const url = window.location + 'instance'
     axios.post(url, move, { headers: { 'authtoken': this.authtoken } })
       .then((res) => {
-        this.view.renderEntities(res.data.entities, res.data.username)
-        this.uiManager.moveButton.setActive(res.data.entities[res.data.username].moveSet)
+        this.view.renderEntities(res.data.entities)
+        this.uiManager.moveButton.setActive(res.data.entities[this.playerId].moveSet)
         this.uiManager.endTurnButton.setUnActive()
       })
   }

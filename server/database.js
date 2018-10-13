@@ -6,6 +6,7 @@ const dbName = 'cyberpunk'
 
 const rooms = require('../game/rooms/rooms')
 const Player = require('../game/entitys/player')
+const Zombie = require('../game/entitys/zombie')
 
 class Database {
   constructor () {
@@ -35,8 +36,11 @@ class Database {
   }
 
   createInstance (username, room) {
+    const zombie = new Zombie('zombie', 9, 9)
+    const player = new Player(username, 0, 0)
     const entities = {}
-    entities[username] = new Player(username, 0, 0)
+    entities[player.id] = player
+    entities[zombie.id] = zombie
     const instance = {
       'username': username,
       'room': room,

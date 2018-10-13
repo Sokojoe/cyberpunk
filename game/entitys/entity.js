@@ -1,3 +1,4 @@
+const uuid = require('uuid/v4')
 
 class Entity {
   constructor (name, maxHealth, x, y) {
@@ -7,6 +8,7 @@ class Entity {
     this.health = this.maxHealth
     this.x = x
     this.y = y
+    this.id = uuid()
   }
 
   takeDamage (damage, deathCallback) {

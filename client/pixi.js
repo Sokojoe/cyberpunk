@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
 import playerSprite from './resources/sprites/Player.png'
+import zombieSprite from './resources/sprites/Zombie.png'
 import tile from './resources/sprites/floor.png'
 
 const TILE_SIZE = 64
@@ -13,6 +14,8 @@ class View {
 
     const canvasLocation = document.getElementById('pixiCanvas')
     canvasLocation.appendChild(this.app.view)
+
+    this.entitySprites = {}
   }
 
   renderRoom (room) {
@@ -40,22 +43,32 @@ class View {
     this.mapContainer = container
   }
 
-  renderEntities (entities, username) {
-    this.username = username
-    this.entities = entities
-
-    this.renderEntity(entities[username])
+  renderEntities (entities) {
+    for (const key in entities) {
+      const entity = entities[key]
+      const sprite = this.renderEntity(entity)
+      this.entitySprites[entity.id] = sprite
+    }
   }
 
   renderEntity (entity) {
-    this.app.stage.removeChild(this.player)
-    const sprite = PIXI.Sprite.fromImage(playerSprite, false)
+    this.app.stage.removeChild(this.entitySprites[entity.id])
+
+    let sprite
+    if (entity.type === 'Player') {
+      sprite = PIXI.Sprite.fromImage(playerSprite, false)
+      this.player = entity
+    } else if (entity.type === 'Zombie') {
+      sprite = PIXI.Sprite.fromImage(zombieSprite, false)
+    }
+
     sprite.height = TILE_SIZE
     sprite.width = TILE_SIZE
     sprite.x = TILE_SIZE * entity.x
     sprite.y = (this.room.height - 1 - entity.y) * TILE_SIZE
-    this.player = sprite
     this.app.stage.addChild(sprite)
+
+    return sprite
   }
 
   renderMoveButton (uiManager) {
@@ -116,7 +129,7 @@ class View {
   }
 
   renderMoveOptions (moveButton, coordinateMap) {
-    const player = this.entities[this.username]
+    const player = this.player
     let container = new PIXI.Container()
     container.x = player.x * TILE_SIZE
     container.y = (this.room.height - 1 - player.y) * TILE_SIZE

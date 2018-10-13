@@ -20,10 +20,17 @@ app.get('/instance', AuthController.verifyToken, (req, res) => {
   database.getInstance(req.username).then((instance) => {
     delete instance['_id']
 
+    // Find player id
+    for (const key in instance.entities) {
+      if (instance.entities[key].name === req.username) {
+        this.playerId = instance.entities[key].id
+      }
+    }
+
     // Calculate players valid move set
-    const player = instance.entities[req.username]
+    const player = instance.entities[this.playerId]
     const validMoveSet = moveValidator.calculateMoveSet(player, instance.room)
-    instance.entities[req.username].moveSet = validMoveSet
+    instance.entities[this.playerId].moveSet = validMoveSet
 
     res.send(instance)
   })
@@ -31,8 +38,15 @@ app.get('/instance', AuthController.verifyToken, (req, res) => {
 
 app.post('/instance', AuthController.verifyToken, (req, res) => {
   database.getInstance(req.username).then((instance) => {
+    // Find player id
+    for (const key in instance.entities) {
+      if (instance.entities[key].name === req.username) {
+        this.playerId = instance.entities[key].id
+      }
+    }
+
     const playerRequestedCoordinates = req.body.move
-    const player = instance.entities[req.username]
+    const player = instance.entities[this.playerId]
 
     // Validate player move is allowed
     const move = { 'x': playerRequestedCoordinates.x - player.x, 'y': playerRequestedCoordinates.y - player.y }
@@ -45,7 +59,7 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
 
       // Calculate players valid move set
       const validMoveSet = moveValidator.calculateMoveSet(player, instance.room)
-      instance.entities[req.username].moveSet = validMoveSet
+      instance.entities[this.playerId].moveSet = validMoveSet
 
       res.send(instance)
     } else {
