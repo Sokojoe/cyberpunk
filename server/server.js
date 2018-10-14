@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const app = express()
 const database = require('./database')
 const moveValidator = require('../game/validators/moveValidator')
+const moveAlgorith = require('../game/ai/move-algorithms')
 const PORT = 6930
 
 const AuthController = require('./authentication')
@@ -53,6 +54,16 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
     const moveValid = moveValidator.isMoveValid(player, instance.room, move)
 
     if (moveValid) {
+      for (const key in instance.entities) {
+        const entity = instance.entities[key]
+
+        if (entity.type !== 'Player') {
+          const newCoords = moveAlgorith[entity.moveAlgorith](entity.id, instance.entities, instance.room)
+          entity.x = newCoords.x
+          entity.y = newCoords.y
+        }
+      }
+
       player.x = playerRequestedCoordinates.x
       player.y = playerRequestedCoordinates.y
       database.updateInstance(req.username, instance)
