@@ -18,7 +18,7 @@ test('moveValidator-isMoveValid-moveNotInMoveSet', t => {
   const player = new Player('Player', 0, 0)
   const room = { height: 10, width: 10 }
 
-  const moveValid = moveValidator.isMoveValid(player, room, { x: 2, y: 0 })
+  const moveValid = moveValidator.isMoveValid(player, room, { x: 3, y: 0 })
 
   t.is(moveValid, false)
 })
@@ -38,7 +38,7 @@ test('moveValidator-calculateMoveSet', t => {
 
   const moveSet = moveValidator.calculateMoveSet(player, room)
 
-  t.deepEqual(moveSet, [{ x: -1, y: 0 }, { x: 0, y: -1 }])
+  t.deepEqual(moveSet, [{ x: 0, y: -2 }, { x: 0, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 0 }, { x: -2, y: 0 }])
 })
 
 test('moveAlgorith-zombieMove-StraightMovement', t => {
@@ -75,7 +75,7 @@ test('moveAlgorith-zombieMove-NavigateToPlayer', t => {
   entities[player.id] = player
   entities[zombie.id] = zombie
 
-  for (let i = 0; i < 3; i++){
+  for (let i = 0; i < 3; i++) {
     const moveChoice = moveAlgorith['zombie'](zombie.id, entities, room)
     zombie.x = moveChoice.x
     zombie.y = moveChoice.y
