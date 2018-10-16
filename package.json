@@ -11,7 +11,7 @@
     "start": "node server/server.js",
     "build": "parcel build ./client/index.html --public-url /static --out-dir static",
     "fix": "standard --fix",
-    "test": "ava"
+    "test": "ava && yarn standard"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
