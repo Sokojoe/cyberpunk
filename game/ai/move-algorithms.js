@@ -1,7 +1,7 @@
 'use strict'
 
 const moveValidator = require('../validators/moveValidator')
-const Coordinate = require('../tiles/Coordinate')
+const Coordinate = require('../tiles/coordinate')
 
 function zombieMove (entityId, entities, room) {
   // get valid moveset
