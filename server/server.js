@@ -5,6 +5,7 @@ const app = express()
 const database = require('./database')
 const moveValidator = require('../game/validators/moveValidator')
 const moveAlgorith = require('../game/ai/move-algorithms')
+const Coordinate = require('../game/tiles/coordinate')
 const PORT = 6930
 
 const AuthController = require('./authentication')
@@ -45,12 +46,10 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
         this.playerId = instance.entities[key].id
       }
     }
-
     const playerRequestedCoordinates = req.body.move
     const player = instance.entities[this.playerId]
 
-    // Validate player move is allowed
-    const move = { 'x': playerRequestedCoordinates.x - player.x, 'y': playerRequestedCoordinates.y - player.y }
+    const move = new Coordinate(playerRequestedCoordinates.x - player.position.x, playerRequestedCoordinates.y - player.position.y)
     const moveValid = moveValidator.isMoveValid(player, instance.room, move)
 
     if (moveValid) {
@@ -59,13 +58,12 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
 
         if (entity.type !== 'Player') {
           const newCoords = moveAlgorith[entity.moveAlgorith](entity.id, instance.entities, instance.room)
-          entity.x = newCoords.x
-          entity.y = newCoords.y
+          entity.position = new Coordinate(newCoords.x, newCoords.y)
         }
       }
 
-      player.x = playerRequestedCoordinates.x
-      player.y = playerRequestedCoordinates.y
+      player.position.x = playerRequestedCoordinates.x
+      player.position.y = playerRequestedCoordinates.y
       database.updateInstance(req.username, instance)
 
       // Calculate players valid move set

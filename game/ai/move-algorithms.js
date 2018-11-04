@@ -1,6 +1,7 @@
 'use strict'
 
 const moveValidator = require('../validators/moveValidator')
+const Coordinate = require('../tiles/coordinate')
 
 function zombieMove (entityId, entities, room) {
   // get valid moveset
@@ -20,14 +21,13 @@ function zombieMove (entityId, entities, room) {
   let shortestDist = 10000
   for (const key in validMoveSet) {
     const potentialMove = validMoveSet[key]
-    const potentialMoveCoords = { x: potentialMove.x + entity.x, y: potentialMove.y + entity.y }
-    const dist = Math.sqrt(Math.pow((potentialMoveCoords.x - player.x), 2) + Math.pow((potentialMoveCoords.y - player.y), 2))
+    const potentialMoveCoords = new Coordinate(potentialMove.x + entity.position.x, potentialMove.y + entity.position.y)
+    const dist = Math.sqrt(Math.pow((potentialMoveCoords.x - player.position.x), 2) + Math.pow((potentialMoveCoords.y - player.position.y), 2))
     if (dist < shortestDist) {
       shortestDist = dist
       bestMove = potentialMoveCoords
     }
   }
-
   return bestMove
 }
 
