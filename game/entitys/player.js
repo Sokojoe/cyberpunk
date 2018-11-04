@@ -1,22 +1,23 @@
 const Entity = require('./entity')
+const Coordinate = require('../tiles/coordinate')
 
 class Player extends Entity {
-  constructor (name, x, y) {
-    super(name, 100, x, y)
+  constructor (name, position) {
+    super(name, 100, position)
     this.type = 'Player'
     this.moveSet = [
-      { x: 2, y: 0 },
-      { x: 1, y: -1 },
-      { x: 1, y: 0 },
-      { x: 1, y: 1 },
-      { x: 0, y: -2 },
-      { x: 0, y: -1 },
-      { x: 0, y: 1 },
-      { x: 0, y: 2 },
-      { x: -1, y: -1 },
-      { x: -1, y: 0 },
-      { x: -1, y: 1 },
-      { x: -2, y: 0 }
+      new Coordinate(2, 0),
+      new Coordinate(1, -1),
+      new Coordinate(1, 0),
+      new Coordinate(1, 1),
+      new Coordinate(0, -2),
+      new Coordinate(0, -1),
+      new Coordinate(0, 1),
+      new Coordinate(0, 2),
+      new Coordinate(-1, -1),
+      new Coordinate(-1, 0),
+      new Coordinate(-1, 1),
+      new Coordinate(-2, 0)
     ]
   }
 }

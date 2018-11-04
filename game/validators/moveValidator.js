@@ -12,8 +12,8 @@ function calculateMoveSet (entity, map) {
 }
 
 function isMoveValid (entity, map, move) {
-  const moveX = move.x + entity.x
-  const moveY = move.y + entity.y
+  const moveX = move.x + entity.position.x
+  const moveY = move.y + entity.position.y
 
   // Check if move is outside map bounds
   if (moveX < 0 || moveX >= map.width) {

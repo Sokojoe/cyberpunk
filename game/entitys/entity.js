@@ -1,13 +1,12 @@
 const uuid = require('uuid/v4')
 
 class Entity {
-  constructor (name, maxHealth, x, y) {
+  constructor (name, maxHealth, position) {
     this.type = 'Entity'
     this.name = name
     this.maxHealth = maxHealth
     this.health = this.maxHealth
-    this.x = x
-    this.y = y
+    this.position = position
     this.id = uuid()
   }
 

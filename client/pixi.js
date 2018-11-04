@@ -2,11 +2,12 @@ import * as PIXI from 'pixi.js'
 import playerSprite from './resources/sprites/Player.png'
 import zombieSprite from './resources/sprites/Zombie.png'
 import tile from './resources/sprites/floor.png'
+import Coordinate from '../game/tiles/coordinate'
 
 const TILE_SIZE = 64
 
-const MOVE_BUTTON_COORDS = { x: 0, y: 10 }
-const END_TURN_BUTTON_COORDS = { x: 2, y: 10 }
+const MOVE_BUTTON_COORDS = new Coordinate(0, 10)
+const END_TURN_BUTTON_COORDS = new Coordinate(2, 10)
 
 class View {
   constructor () {
@@ -64,8 +65,8 @@ class View {
 
     sprite.height = TILE_SIZE
     sprite.width = TILE_SIZE
-    sprite.x = TILE_SIZE * entity.x
-    sprite.y = (this.room.height - 1 - entity.y) * TILE_SIZE
+    sprite.x = TILE_SIZE * entity.position.x
+    sprite.y = (this.room.height - 1 - entity.position.y) * TILE_SIZE
     this.app.stage.addChild(sprite)
 
     return sprite
@@ -131,8 +132,8 @@ class View {
   renderMoveOptions (moveButton, coordinateMap) {
     const player = this.player
     let container = new PIXI.Container()
-    container.x = player.x * TILE_SIZE
-    container.y = (this.room.height - 1 - player.y) * TILE_SIZE
+    container.x = player.position.x * TILE_SIZE
+    container.y = (this.room.height - 1 - player.position.y) * TILE_SIZE
 
     for (const coord in coordinateMap) {
       let moveSquare = new PIXI.Graphics()
@@ -142,7 +143,7 @@ class View {
       moveSquare.interactive = true
       moveSquare.buttonMode = true
       moveSquare.on('pointerdown', () => {
-        moveButton.playerMove = { x: player.x + coordinateMap[coord].x, y: player.y + coordinateMap[coord].y }
+        moveButton.playerMove = new Coordinate(player.position.x + coordinateMap[coord].x, player.position.y + coordinateMap[coord].y)
         moveButton.setUnActive(coordinateMap)
       })
       container.addChild(moveSquare)
