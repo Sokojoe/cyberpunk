@@ -28,7 +28,7 @@ function processMoves (room, entities, entitiesMove) {
       } else {
         // Else find the second closest square to the entity which is free
         const closestCoordinate = findClosestCoordinate(room, entities[entityId].position, collisionPosition, newEntities)
-        
+
         newEntities[entityId] = entities[entityId]
         newEntities[entityId].position = closestCoordinate
       }
@@ -51,7 +51,6 @@ function findClosestCoordinate (room, currentPosition, desiredPosition) {
   // Mock entity to find valid squares surrounding desired position
   const entity = { position: desiredPosition, moveSet: moveSet }
   const validMoveSet = moveValidator.calculateMoveSet(entity, room)
-  console.log(validMoveSet)
   let bestMove
   let shortestDist = 10000
   for (const key in validMoveSet) {

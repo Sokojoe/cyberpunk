@@ -1,9 +1,15 @@
-import test from 'ava'
-import moveValidator from '../game/validators/moveValidator'
-import moveAlgorith from '../game/ai/move-algorithms'
-import Player from '../game/entitys/player'
-import Zombie from '../game/entitys/zombie'
-import Coordinate from '../game/tiles/coordinate'
+const test = require('ava')
+const moveValidator = require('../game/validators/moveValidator')
+const moveAlgorith = require('../game/ai/move-algorithms')
+const Player = require('../game/entitys/player')
+const Zombie = require('../game/entitys/zombie')
+const Coordinate = require('../game/tiles/coordinate')
+const turnEngine = require('../game/logic/turn-engine')
+
+test('fileName-functionName-exampleTest', t => {
+  const a = 1
+  t.is(a, 1)
+})
 
 // Testing moveValidator
 test('moveValidator-isMoveValid-allowedMove', t => {
@@ -91,4 +97,40 @@ test('moveAlgorith-zombieMove-NavigateToPlayer', t => {
 
   t.is(zombie.position.x, 6)
   t.is(zombie.position.y, 6)
+})
+
+// Testing turn-engine
+test('turnEngine-processMoves-noCollision', t => {
+  const room = { width: 10, height: 10 }
+  const entity1 = { position: new Coordinate(3, 3) }
+  const entity2 = { position: new Coordinate(3, 5) }
+  const entitiesMove = { '1': new Coordinate(4, 3), '2': new Coordinate(4, 5) }
+  const entities = { '1': entity1, '2': entity2 }
+  turnEngine(room, entities, entitiesMove)
+  t.deepEqual(entities['1'].position, new Coordinate(4, 3))
+  t.deepEqual(entities['2'].position, new Coordinate(4, 5))
+})
+
+test('turnEngine-processMoves-withCollision', t => {
+  const room = { width: 10, height: 10 }
+  const entity1 = { position: new Coordinate(3, 3) }
+  const entity2 = { position: new Coordinate(3, 5) }
+  const entitiesMove = { '1': new Coordinate(3, 4), '2': new Coordinate(3, 4) }
+  const entities = { '1': entity1, '2': entity2 }
+  turnEngine(room, entities, entitiesMove)
+  t.deepEqual(entities['1'].position, new Coordinate(3, 4))
+  t.deepEqual(entities['2'].position, new Coordinate(3, 5))
+})
+
+// Testing Coordinate
+test('coordinate-isSame-same', t => {
+  const a = new Coordinate(0, 0)
+  const b = new Coordinate(0, 0)
+  t.is(Coordinate.isSame(a, b), true)
+})
+
+test('coordinate-isSame-different', t => {
+  const a = new Coordinate(0, 1)
+  const b = new Coordinate(0, 0)
+  t.is(Coordinate.isSame(a, b), false)
 })
