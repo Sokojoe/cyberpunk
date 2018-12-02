@@ -52,6 +52,17 @@ class View {
     }
   }
 
+  renderEntitiesTurn (entities) {
+    for (const key in entities) {
+      const entity = entities[key]
+      this.renderEntityTurn(entity)
+      console.log(entity.name + ' moved to (' + entity.position.x + ', ' + entity.position.y + ')')
+      if (entity.type === 'Player') {
+        this.player = entity
+      }
+    }
+  }
+
   renderEntity (entity) {
     this.app.stage.removeChild(this.entitySprites[entity.id])
 
@@ -70,6 +81,35 @@ class View {
     this.app.stage.addChild(sprite)
 
     return sprite
+  }
+
+  renderEntityTurn (entity) {
+    const sprite = this.entitySprites[entity.id]
+    return this.tweenSprite(sprite, entity.position, 600)
+  }
+
+  tweenSprite (sprite, coordinates, time) {
+    const ticker = this.app.ticker
+    let currentTime = 0
+    const originalX = sprite.x
+    const originalY = sprite.y
+    const destinationX = TILE_SIZE * coordinates.x
+    const destinationY = (this.room.height - 1 - coordinates.y) * TILE_SIZE
+    return new Promise((resolve, reject) => {
+      function tween () {
+        currentTime = currentTime + ticker.elapsedMS
+        if (currentTime > time) {
+          sprite.x = destinationX
+          sprite.y = destinationY
+          resolve()
+          ticker.remove(tween)
+        } else {
+          sprite.x = originalX + ((destinationX - originalX) * (currentTime / time))
+          sprite.y = originalY + ((destinationY - originalY) * (currentTime / time))
+        }
+      }
+      ticker.add(tween)
+    })
   }
 
   renderMoveButton (uiManager) {

@@ -6,6 +6,7 @@ class GameManager {
   constructor (view) {
     this.view = view
     this.uiManager = {}
+    this.playerId = null
   }
 
   loadGame (authtoken) {
@@ -37,8 +38,8 @@ class GameManager {
     const url = window.location + 'instance'
     axios.post(url, move, { headers: { 'authtoken': this.authtoken } })
       .then((res) => {
-        this.view.renderEntities(res.data.entities)
-        this.uiManager.moveButton.setActive(res.data.entities[this.playerId].moveSet)
+        this.view.renderEntitiesTurn(res.data)
+        this.uiManager.moveButton.setActive(res.data[this.playerId].validMoves)
         this.uiManager.endTurnButton.setUnActive()
       })
   }
