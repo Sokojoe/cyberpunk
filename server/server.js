@@ -1,6 +1,8 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
+const yamlParser = require('js-yaml')
+const fs = require('fs')
 const app = express()
 const database = require('./database')
 const moveValidator = require('../game/validators/moveValidator')
@@ -14,6 +16,8 @@ app.use('/api/auth', AuthController.router)
 app.use('/static', express.static(path.join(__dirname, '../static')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+yamlParser.safeLoad(fs.readFileSync('./game/weapons/weapons.yml', 'utf8'))
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../static/index.html'))
