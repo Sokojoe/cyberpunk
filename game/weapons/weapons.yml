@@ -1,0 +1,77 @@
+AttackPatterns:
+  point: &point
+    - x: 0
+      y: 0
+  star: &star
+    - x: 0
+      y: 0
+    - x: 1
+      y: 0
+    - x: -1
+      y: 0
+    - x: 0
+      y: 1
+    - x: 0
+      y: -1
+
+Weapons:
+  PreserverRifle:
+    name: Preserver Rifle
+    attackSquares:
+      - x: 3
+        y: 0
+        attackPattern: *star
+      - x: 2
+        y: 1
+        attackPattern: *star
+      - x: 1
+        y: 2
+        attackPattern: *star
+      - x: 1
+        y: 2
+        attackPattern: *star
+      - x: 0
+        y: 3
+        attackPattern: *star
+      - x: -1
+        y: 2
+        attackPattern: *star
+      - x: -2
+        y: 1
+        attackPattern: *star
+      - x: -3
+        y: 0
+        attackPattern: *star
+      - x: 0
+        y: 0
+        attackPattern: *star
+      - x: 1
+        y: 0
+        attackPattern: *star
+      - x: -1
+        y: 0
+        attackPattern: *star
+      - x: 0
+        y: 1
+        attackPattern: *star
+      - x: 0
+        y: -1
+        attackPattern: *star
+    damage: 25
+
+  PreserverMachete:
+    name: Preserver Machete
+    attackSquares:
+      - x: 1
+        y: 0
+        attackPattern: *point
+      - x: -1
+        y: 0
+        attackPattern: *point
+      - x: 0
+        y: 1
+        attackPattern: *point
+      - x: 0
+        y: -1
+        attackPattern: *point
+    damage: 100
