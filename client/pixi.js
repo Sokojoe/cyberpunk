@@ -7,7 +7,8 @@ import Coordinate from '../game/tiles/coordinate'
 const TILE_SIZE = 64
 
 const MOVE_BUTTON_COORDS = new Coordinate(0, 10)
-const END_TURN_BUTTON_COORDS = new Coordinate(2, 10)
+const ATTACK_BUTTON_COORDS = new Coordinate(2, 10)
+const END_TURN_BUTTON_COORDS = new Coordinate(4, 10)
 
 class View {
   constructor () {
@@ -191,6 +192,88 @@ class View {
 
     this.app.stage.removeChild(moveButton.moveOptions)
     moveButton.moveOptions = container
+    this.app.stage.addChild(container)
+  }
+
+  renderAttackButton (uiManager) {
+    const btnHeight = TILE_SIZE
+    const btnWidth = TILE_SIZE * 2
+
+    let container = new PIXI.Container()
+    container.x = ATTACK_BUTTON_COORDS.x * TILE_SIZE
+    container.y = ATTACK_BUTTON_COORDS.y * TILE_SIZE
+
+    let background = new PIXI.Graphics()
+    let text = new PIXI.Text()
+    text.y = btnHeight / 4
+    text.x = btnWidth / 8
+    text.style.align = 'center'
+    text.style.fontFamily = 'Arial'
+    text.style.fontSize = 22
+    text.text = 'Attack'
+
+    // Render button
+    container.addChild(background)
+    container.addChild(text)
+    const attackButton = {}
+    attackButton.container = container
+
+    // Define button clicked
+    container.on('pointerdown', () => {
+      attackButton.setActive()
+    })
+
+    attackButton.setActive = (playerMoveSet) => {
+      // Cache the players moveset incase function is called without moveSet
+      if (playerMoveSet) {
+        this.playerMoveSet = playerMoveSet
+      }
+      uiManager.endTurnButton.setUnActive()
+      container.interactive = false
+      container.buttonMode = false
+      this.renderAttackOptions(attackButton, this.playerMoveSet)
+      this.app.stage.removeChild(container)
+      background.beginFill(0x00FF00)
+      background.drawRect(0, 0, btnWidth, btnHeight)
+
+      this.app.stage.addChild(container)
+    }
+
+    attackButton.setUnActive = () => {
+      this.app.stage.removeChild(container)
+      this.app.stage.removeChild(attackButton.attackOptions)
+      background.beginFill(0x0000FF)
+      background.drawRect(0, 0, btnWidth, btnHeight)
+      this.app.stage.addChild(container)
+      container.interactive = true
+      container.buttonMode = true
+      uiManager.endTurnButton.setActive()
+    }
+    return attackButton
+  }
+
+  renderAttackOptions (attackButton, coordinateMap) {
+    const player = this.player
+    let container = new PIXI.Container()
+    container.x = player.position.x * TILE_SIZE
+    container.y = (this.room.height - 1 - player.position.y) * TILE_SIZE
+
+    for (const coord in coordinateMap) {
+      let attackSquare = new PIXI.Graphics()
+      attackSquare.beginFill(0xFF0000)
+      attackSquare.fillAlpha = 0.15
+      attackSquare.drawRect(coordinateMap[coord].x * TILE_SIZE, -coordinateMap[coord].y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+      attackSquare.interactive = true
+      attackSquare.buttonMode = true
+      attackSquare.on('pointerdown', () => {
+        console.log('clicked ' + coordinateMap[coord])
+        attackButton.setUnActive()
+      })
+      container.addChild(attackSquare)
+    }
+
+    this.app.stage.removeChild(attackButton.attackOptions)
+    attackButton.attackOptions = container
     this.app.stage.addChild(container)
   }
 

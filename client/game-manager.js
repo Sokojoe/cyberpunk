@@ -1,6 +1,9 @@
 'use strict'
 
 import axios from 'axios'
+import weaponFile from '../game/weapons/weapons.yml'
+
+console.log(weaponFile.Weapons)
 
 class GameManager {
   constructor (view) {
@@ -28,7 +31,9 @@ class GameManager {
         this.view.renderEntities(res.data.entities)
         this.uiManager.moveButton = this.view.renderMoveButton(this.uiManager)
         this.uiManager.endTurnButton = this.view.renderEndTurnButton(this.uiManager, () => this.sendTurn())
+        this.uiManager.attackButton = this.view.renderAttackButton(this.uiManager)
         this.uiManager.moveButton.setActive(res.data.entities[this.playerId].moveSet)
+        this.uiManager.attackButton.setUnActive()
         this.uiManager.endTurnButton.setUnActive()
       })
   }
