@@ -1,11 +1,10 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
-const yamlParser = require('js-yaml')
-const fs = require('fs')
 const app = express()
 const database = require('./database')
 const moveValidator = require('../game/validators/moveValidator')
+const attackValidator = require('../game/validators/attackValidator')
 const moveAlgorith = require('../game/ai/move-algorithms')
 const turnEngine = require('../game/logic/turn-engine')
 const Coordinate = require('../game/tiles/coordinate')
@@ -16,8 +15,6 @@ app.use('/api/auth', AuthController.router)
 app.use('/static', express.static(path.join(__dirname, '../static')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
-yamlParser.safeLoad(fs.readFileSync('./game/weapons/weapons.yml', 'utf8'))
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../static/index.html'))
@@ -39,6 +36,9 @@ app.get('/instance', AuthController.verifyToken, (req, res) => {
     const validMoveSet = moveValidator.calculateMoveSet(player, instance.room)
     instance.entities[this.playerId].moveSet = validMoveSet
 
+    // Calculate players valid attack set
+    const validAttack = attackValidator.calculateValidAttackSet(player, instance.room)
+    instance.entities[this.playerId].attackSet = validAttack
     res.send(instance)
   })
 })
@@ -86,8 +86,12 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
           // Calculate players valid move set
           const validMoveSet = moveValidator.calculateMoveSet(player, instance.room)
           turnSet[entityKey].validMoves = validMoveSet
+          // Calculate players valid attack set
+          const validAttackSet = attackValidator.calculateValidAttackSet(player, instance.room)
+          turnSet[entityKey].validAttacks = validAttackSet
         }
       }
+
       res.send(turnSet)
     } else {
       res.status(400).send({ auth: false, message: 'Move is invalid' })
