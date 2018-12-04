@@ -86,8 +86,12 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
           // Calculate players valid move set
           const validMoveSet = moveValidator.calculateMoveSet(player, instance.room)
           turnSet[entityKey].validMoves = validMoveSet
+          // Calculate players valid attack set
+          const validAttackSet = attackValidator.calculateValidAttackSet(player, instance.room)
+          turnSet[entityKey].validAttacks = validAttackSet
         }
       }
+
       res.send(turnSet)
     } else {
       res.status(400).send({ auth: false, message: 'Move is invalid' })
