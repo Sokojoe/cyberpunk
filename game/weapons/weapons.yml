@@ -60,3 +60,23 @@ Weapons:
         y: -1
         attackPattern: *point
     damage: 100
+
+  TestWeapon1:
+    testWeapon: true
+    name: TestWeapon1
+    attackSet:
+      - x: 0
+        y: 5
+        attackPattern: *star
+    damage: 1
+
+  TestWeapon2:
+    testWeapon: true
+    name: TestWeapon2
+    attackSet:
+      - x: 0
+        y: 0
+        attackPattern:
+        - x: 5
+          y: 0
+    damage: 1

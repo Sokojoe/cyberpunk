@@ -63,7 +63,6 @@ function squareInMap (coordinate, map) {
   } else if (coordinate.y < 0 || coordinate.y >= map.height) {
     return false
   }
-  console.log(coordinate)
   return true
 }
 
