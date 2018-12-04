@@ -27,9 +27,6 @@ Weapons:
       - x: 1
         y: 2
         attackPattern: *star
-      - x: 1
-        y: 2
-        attackPattern: *star
       - x: 0
         y: 3
         attackPattern: *star

@@ -1,7 +1,0 @@
-server take attack set,
-
-calculate which attacks from attackset are inside map,
-
-for each attack in validattackset, calculate attack pattern squares inside map
-
-send to client
