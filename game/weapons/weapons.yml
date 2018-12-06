@@ -17,15 +17,12 @@ AttackPatterns:
 Weapons:
   PreserverRifle:
     name: Preserver Rifle
-    attackSquares:
+    attackSet:
       - x: 3
         y: 0
         attackPattern: *star
       - x: 2
         y: 1
-        attackPattern: *star
-      - x: 1
-        y: 2
         attackPattern: *star
       - x: 1
         y: 2
@@ -42,26 +39,11 @@ Weapons:
       - x: -3
         y: 0
         attackPattern: *star
-      - x: 0
-        y: 0
-        attackPattern: *star
-      - x: 1
-        y: 0
-        attackPattern: *star
-      - x: -1
-        y: 0
-        attackPattern: *star
-      - x: 0
-        y: 1
-        attackPattern: *star
-      - x: 0
-        y: -1
-        attackPattern: *star
     damage: 25
 
   PreserverMachete:
     name: Preserver Machete
-    attackSquares:
+    attackSet:
       - x: 1
         y: 0
         attackPattern: *point
@@ -75,3 +57,23 @@ Weapons:
         y: -1
         attackPattern: *point
     damage: 100
+
+  TestWeapon1:
+    testWeapon: true
+    name: TestWeapon1
+    attackSet:
+      - x: 0
+        y: 5
+        attackPattern: *star
+    damage: 1
+
+  TestWeapon2:
+    testWeapon: true
+    name: TestWeapon2
+    attackSet:
+      - x: 0
+        y: 0
+        attackPattern:
+        - x: 5
+          y: 0
+    damage: 1

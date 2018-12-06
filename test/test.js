@@ -1,5 +1,6 @@
 const test = require('ava')
 const moveValidator = require('../game/validators/moveValidator')
+const attackValidator = require('../game/validators/attackValidator')
 const moveAlgorith = require('../game/ai/move-algorithms')
 const Player = require('../game/entitys/player')
 const Zombie = require('../game/entitys/zombie')
@@ -133,4 +134,56 @@ test('coordinate-isSame-different', t => {
   const a = new Coordinate(0, 1)
   const b = new Coordinate(0, 0)
   t.is(Coordinate.isSame(a, b), false)
+})
+
+test('attackValidator-calculateValidAttackSet-allInMap', t => {
+  const player = new Player('Player', new Coordinate(5, 0))
+  const room = { width: 10, height: 10 }
+  player.weapon = 'TestWeapon1'
+  const validAttackSet = attackValidator.calculateValidAttackSet(player, room)
+  const weaponAttackSet = [{
+    x: 0,
+    y: 5,
+    attackPattern: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: -1, y: 0 },
+      { x: 0, y: 1 },
+      { x: 0, y: -1 }
+    ] }]
+  t.deepEqual(validAttackSet, weaponAttackSet)
+})
+
+test('attackValidator-calculateValidAttackSet-baseNotInMap', t => {
+  const player = new Player('Player', new Coordinate(0, 10))
+  const room = { width: 10, height: 10 }
+  player.weapon = 'TestWeapon1'
+  const validAttackSet = attackValidator.calculateValidAttackSet(player, room)
+  const weaponAttackSet = []
+  t.deepEqual(validAttackSet, weaponAttackSet)
+})
+
+test('attackValidator-calculateValidAttackSet-patternPartiallyInMap', t => {
+  const player = new Player('Player', new Coordinate(0, 4))
+  const room = { width: 10, height: 10 }
+  player.weapon = 'TestWeapon1'
+  const validAttackSet = attackValidator.calculateValidAttackSet(player, room)
+  const weaponAttackSet = [{
+    x: 0,
+    y: 5,
+    attackPattern: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 0, y: -1 }
+    ] }]
+  t.deepEqual(validAttackSet, weaponAttackSet)
+})
+
+test('attackValidator-calculateValidAttackSet-noPattern', t => {
+  const player = new Player('Player', new Coordinate(9, 0))
+  const room = { width: 10, height: 10 }
+  player.weapon = 'TestWeapon2'
+  const validAttackSet = attackValidator.calculateValidAttackSet(player, room)
+  const weaponAttackSet = []
+  t.deepEqual(validAttackSet, weaponAttackSet)
 })
