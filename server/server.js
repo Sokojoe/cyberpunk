@@ -55,8 +55,8 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
     const playerRequestedCoordinates = req.body.move
     const player = instance.entities[playerId]
 
-    const move = new Coordinate(playerRequestedCoordinates.x - player.position.x, playerRequestedCoordinates.y - player.position.y)
-    const moveValid = moveValidator.isMoveValid(player, instance.room, move)
+    const move = new Coordinate(playerRequestedCoordinates.x + player.position.x, playerRequestedCoordinates.y + player.position.y)
+    const moveValid = moveValidator.isMoveValid(player, instance.room, req.body.move)
 
     if (moveValid) {
       const entityDesiredMoves = {}
@@ -68,7 +68,8 @@ app.post('/instance', AuthController.verifyToken, (req, res) => {
           entityDesiredMoves[entity.id] = moveAlgorith[entity.moveAlgorith](entity.id, instance.entities, instance.room)
         }
       }
-      entityDesiredMoves[playerId] = new Coordinate(playerRequestedCoordinates.x, playerRequestedCoordinates.y)
+
+      entityDesiredMoves[playerId] = move
       turnEngine(instance.room, instance.entities, entityDesiredMoves)
 
       database.updateInstance(req.username, instance)
