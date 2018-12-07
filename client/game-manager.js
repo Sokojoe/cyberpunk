@@ -2,6 +2,7 @@
 
 import axios from 'axios'
 import weaponFile from '../game/weapons/weapons.yml'
+import UiManager from './ui/uiManager'
 
 console.log(weaponFile.Weapons)
 
@@ -10,6 +11,7 @@ class GameManager {
     this.view = view
     this.uiManager = {}
     this.playerId = null
+    this.uiState = {}
   }
 
   loadGame (authtoken) {
@@ -27,25 +29,23 @@ class GameManager {
           }
         }
 
+        this.uiState.moveSet = res.data.entities[this.playerId].moveSet
+        this.uiState.attackSet = res.data.entities[this.playerId].attackSet
+        this.uiState.position = res.data.entities[this.playerId].position
+
         this.view.renderRoom(res.data.room)
         this.view.renderEntities(res.data.entities)
-        this.uiManager.moveButton = this.view.renderMoveButton(this.uiManager)
-        this.uiManager.endTurnButton = this.view.renderEndTurnButton(this.uiManager, () => this.sendTurn())
-        this.uiManager.attackButton = this.view.renderAttackButton(this.uiManager)
-        this.uiManager.moveButton.setActive(res.data.entities[this.playerId].moveSet)
-        this.uiManager.attackButton.setUnActive()
-        this.uiManager.endTurnButton.setUnActive()
+        this.uiManager = new UiManager(this.view.app.stage, this.uiState, (turnSet) => this.sendTurn(turnSet))
       })
   }
 
-  sendTurn () {
-    const move = { move: this.uiManager.moveButton.playerMove }
+  sendTurn (turnSet) {
     const url = window.location + 'instance'
-    axios.post(url, move, { headers: { 'authtoken': this.authtoken } })
+    axios.post(url, turnSet, { headers: { 'authtoken': this.authtoken } })
       .then((res) => {
+        console.log(res)
         this.view.renderEntitiesTurn(res.data)
-        this.uiManager.moveButton.setActive(res.data[this.playerId].validMoves)
-        this.uiManager.endTurnButton.setUnActive()
+        this.uiState = res.data
       })
   }
 }
