@@ -3,11 +3,9 @@
 import * as PIXI from 'pixi.js'
 
 const TILE_SIZE = 64
-const activeColor = 0x00FF00
-const inactiveColor = 0x0000FF
 
 class Button {
-  constructor (stage, text, position) {
+  constructor (stage, text, position, options) {
     this.stage = stage
     this.position = position
 
@@ -39,6 +37,11 @@ class Button {
         this.clickEvent()
       }
     })
+    if (options) {
+      this.options = options
+    } else {
+      this.options = {}
+    }
   }
 
   onClick (func) {
@@ -47,7 +50,11 @@ class Button {
 
   setActive (func) {
     this.stage.removeChild(this.button)
-    this.background.beginFill(activeColor)
+    if (this.options.activeColor) {
+      this.background.beginFill(this.options.activeColor)
+    } else {
+      this.background.beginFill(0x66ff14)
+    }
     this.background.drawRect(0, 0, this.btnWidth, this.btnHeight)
     this.button.interactive = false
     this.button.buttonMode = false
@@ -57,7 +64,11 @@ class Button {
 
   setUnActive (func) {
     this.stage.removeChild(this.button)
-    this.background.beginFill(inactiveColor)
+    if (this.options.inactiveColor) {
+      this.background.beginFill(this.options.inactiveColor)
+    } else {
+      this.background.beginFill(0x1b13f9)
+    }
     this.background.drawRect(0, 0, this.btnWidth, this.btnHeight)
     this.button.interactive = true
     this.button.buttonMode = true
