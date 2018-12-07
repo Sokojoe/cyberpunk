@@ -7,7 +7,7 @@ const dbName = 'cyberpunk'
 const rooms = require('../game/rooms/rooms')
 const Player = require('../game/entitys/player')
 const Zombie = require('../game/entitys/zombie')
-const Coordinate = require('../game/tiles/Coordinate')
+const Coordinate = require('../game/tiles/coordinate')
 
 class Database {
   constructor () {

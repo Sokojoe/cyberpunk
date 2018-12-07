@@ -1,7 +1,7 @@
 'use strict'
 
 import Square from './square'
-import AttackPatternSquare from './AttackPatternSquare'
+import AttackPatternSquare from './attackPatternSquare'
 
 class AttackSquare extends Square {
   constructor (stage, attack, playerPosition, turnSet, close) {
