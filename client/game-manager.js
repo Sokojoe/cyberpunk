@@ -43,9 +43,11 @@ class GameManager {
     const url = window.location + 'instance'
     axios.post(url, turnSet, { headers: { 'authtoken': this.authtoken } })
       .then((res) => {
-        console.log(res)
         this.view.renderEntitiesTurn(res.data)
-        this.uiState = res.data
+        this.uiState.moveSet = res.data[this.playerId].validMoves
+        this.uiState.attackSet = res.data[this.playerId].validAttacks
+        this.uiState.position = res.data[this.playerId].position
+        this.uiManager.reset(this.uiState)
       })
   }
 }

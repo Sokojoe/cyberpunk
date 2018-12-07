@@ -7,9 +7,10 @@ import EndTurnButton from './endTurnButton'
 class uiManager {
   constructor (stage, playerState, endTurn) {
     this.turnSet = {}
+    this.playerState = playerState
     this.buttons = [
-      { status: 'current', button: new MoveButton(stage, this, playerState, this.turnSet) },
-      { status: 'ready', button: new AttackButton(stage, this, playerState, this.turnSet) }
+      { status: 'current', button: new MoveButton(stage, this, this.playerState, this.turnSet) },
+      { status: 'ready', button: new AttackButton(stage, this, this.playerState, this.turnSet) }
     ]
     this.endTurnButton = new EndTurnButton(stage, this, this.turnSet, endTurn)
     this.reset()

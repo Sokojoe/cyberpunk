@@ -9,8 +9,7 @@ class AttackButton extends Button {
     this.onClick(() => {
       uiManager.setThisActive(this)
     })
-    this.attackSet = playerState.attackSet
-    this.playerPosition = playerState.position
+    this.playerState = playerState
     this.attackSquares = []
     this.stage = stage
     this.turnSet = turnSet
@@ -19,12 +18,12 @@ class AttackButton extends Button {
 
   setActive () {
     super.setActive(() => {
-      for (const key in this.attackSet) {
-        const attack = this.attackSet[key]
+      for (const key in this.playerState.attackSet) {
+        const attack = this.playerState.attackSet[key]
         this.attackSquares.push(new AttackSquare(
           this.stage,
           attack,
-          this.playerPosition,
+          this.playerState.position,
           this.turnSet,
           () => {
             this.uiManager.setNextActive()

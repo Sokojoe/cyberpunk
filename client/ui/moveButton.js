@@ -9,9 +9,7 @@ class MoveButton extends Button {
     this.onClick(() => {
       uiManager.setThisActive(this)
     })
-    console.log(playerState)
-    this.moveSet = playerState.moveSet
-    this.playerPosition = playerState.position
+    this.playerState = playerState
     this.moveSquares = []
     this.turnSet = turnSet
     this.uiManager = uiManager
@@ -19,12 +17,12 @@ class MoveButton extends Button {
 
   setActive () {
     super.setActive(() => {
-      for (const key in this.moveSet) {
-        const move = this.moveSet[key]
+      for (const key in this.playerState.moveSet) {
+        const move = this.playerState.moveSet[key]
         this.moveSquares.push(new MoveSquare(
           this.stage,
           move,
-          this.playerPosition,
+          this.playerState.position,
           this.turnSet,
           () => {
             this.uiManager.setNextActive()

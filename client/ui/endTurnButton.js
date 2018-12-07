@@ -10,7 +10,6 @@ class EndTurnButton extends Button {
     this.sendTurn = sendTurn
     this.onClick(() => {
       sendTurn(turnSet)
-      uiManager.reset()
     })
   }
 

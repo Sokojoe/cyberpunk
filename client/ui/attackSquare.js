@@ -9,7 +9,6 @@ class AttackSquare extends Square {
     this.playerPosition = playerPosition
     this.onClick(() => {
       turnSet.attack = attack
-      console.log(turnSet)
       close()
     })
     this.onHoverEnter(() => {
