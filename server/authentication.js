@@ -55,15 +55,23 @@ function verifyToken (req, res, next) {
   const token = req.headers['authtoken']
   if (!token) { return res.status(403).send({ auth: false, message: 'No token provided.' }) }
 
-  jwt.verify(token, SECRET, function (err, decoded) {
-    if (err) {
-      return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' })
-    }
-
-    // if everything good, save to request for use in other routes
+  tokenValid(token).then((decoded) => {
     req.username = decoded.username
     next()
+  }).catch(() => {
+    return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' })
   })
 }
 
-module.exports = { router, verifyToken }
+function tokenValid (token) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, SECRET, (err, decoded) => {
+      if (err) {
+        reject(err)
+      }
+      resolve(decoded)
+    })
+  })
+}
+
+module.exports = { router, verifyToken, tokenValid }

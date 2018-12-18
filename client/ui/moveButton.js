@@ -16,6 +16,7 @@ class MoveButton extends Button {
   }
 
   setActive () {
+    this.setUnActive()
     super.setActive(() => {
       for (const key in this.playerState.moveSet) {
         const move = this.playerState.moveSet[key]

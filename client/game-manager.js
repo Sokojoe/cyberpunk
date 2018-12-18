@@ -1,10 +1,7 @@
 'use strict'
 
-import axios from 'axios'
-import weaponFile from '../game/weapons/weapons.yml'
 import UiManager from './ui/uiManager'
-
-console.log(weaponFile.Weapons)
+import * as Colyseus from 'colyseus.js'
 
 class GameManager {
   constructor (view) {
@@ -17,39 +14,55 @@ class GameManager {
   loadGame (authtoken) {
     this.authtoken = authtoken
 
-    const url = window.location + 'instance'
-    axios.get(url, { headers: { 'authtoken': authtoken } })
-      .then(res => {
-        this.username = res.data.username
+    let client = new Colyseus.Client(`ws://${window.location.host}`)
+    const room = client.join('battle', { authtoken: authtoken })
+    this.uiManager = new UiManager(this.view.app.stage, this.uiState, (turnSet) => sendTurn(turnSet))
 
-        // Find player id
-        for (const key in res.data.entities) {
-          if (res.data.entities[key].name === this.username) {
-            this.playerId = res.data.entities[key].id
-          }
+    room.listen(':new', (change) => {
+      if (change.operation === 'add') {
+        if (change.path.new === 'map') {
+          this.view.renderRoom(change.value)
         }
+      }
+    })
 
-        this.uiState.moveSet = res.data.entities[this.playerId].moveSet
-        this.uiState.attackSet = res.data.entities[this.playerId].attackSet
-        this.uiState.position = res.data.entities[this.playerId].position
+    room.listen('entities/:entity', (change) => {
+      if (change.operation === 'add') {
+        if (checkIfEntityPlayer(window.localStorage.getItem('username'), change.value)) {
+          this.playerId = change.value.id
+          console.log(`Found player: ${change.value.name} with id = ${change.value.id}`)
+        }
+        this.view.renderEntity(change.value)
+      }
+    })
 
-        this.view.renderRoom(res.data.room)
-        this.view.renderEntities(res.data.entities)
-        this.uiManager = new UiManager(this.view.app.stage, this.uiState, (turnSet) => this.sendTurn(turnSet))
-      })
+    room.onMessage.add((change) => {
+      console.log(change)
+      if (change.turnSet) {
+        this.uiState.moveSet = change.turnSet.validMoves
+        this.uiState.attackSet = change.turnSet.validAttacks
+        this.uiState.position = change.turnSet.position
+        this.uiManager.reset()
+      }
+      if (change.newTurn) {
+        for (const key in change.newTurn) {
+          const entity = change.newTurn[key]
+          this.view.renderEntityTurn(entity)
+        }
+      }
+    })
+
+    const sendTurn = (turnSet) => {
+      room.send({ turnSet: turnSet })
+    }
   }
+}
 
-  sendTurn (turnSet) {
-    const url = window.location + 'instance'
-    axios.post(url, turnSet, { headers: { 'authtoken': this.authtoken } })
-      .then((res) => {
-        this.view.renderEntitiesTurn(res.data)
-        this.uiState.moveSet = res.data[this.playerId].validMoves
-        this.uiState.attackSet = res.data[this.playerId].validAttacks
-        this.uiState.position = res.data[this.playerId].position
-        this.uiManager.reset(this.uiState)
-      })
+function checkIfEntityPlayer (username, entity) {
+  if (entity.name === username) {
+    return username
   }
+  return null
 }
 
 module.exports = GameManager
