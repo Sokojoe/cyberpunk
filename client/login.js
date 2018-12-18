@@ -21,6 +21,7 @@ function attemptLogin () {
   axios.post(url, { 'username': username, 'password': password }).then((res) => {
     const authKey = res.data.token
     window.localStorage.setItem('authKey', authKey)
+    window.localStorage.setItem('username', username)
     showHideLogin()
   }).catch((err) => {
     console.log(err)
@@ -29,6 +30,7 @@ function attemptLogin () {
 
 function logout () {
   window.localStorage.removeItem('authKey')
+  window.localStorage.removeItem('username')
   showHideLogin()
 }
 

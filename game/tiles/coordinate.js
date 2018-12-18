@@ -15,6 +15,10 @@ class Coordinate {
       return false
     }
   }
+
+  apply (coordinate) {
+    return new Coordinate(this.x + coordinate.x, this.y + coordinate.y)
+  }
 }
 
 module.exports = Coordinate

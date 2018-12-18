@@ -40,14 +40,6 @@ class View {
     this.mapContainer = container
   }
 
-  renderEntities (entities) {
-    for (const key in entities) {
-      const entity = entities[key]
-      const sprite = this.renderEntity(entity)
-      this.entitySprites[entity.id] = sprite
-    }
-  }
-
   renderEntitiesTurn (entities) {
     for (const key in entities) {
       const entity = entities[key]
@@ -76,7 +68,7 @@ class View {
     sprite.y = (this.room.height - 1 - entity.position.y) * TILE_SIZE
     this.app.stage.addChild(sprite)
 
-    return sprite
+    this.entitySprites[entity.id] = sprite
   }
 
   renderEntityTurn (entity) {
