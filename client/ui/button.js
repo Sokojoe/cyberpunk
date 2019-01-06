@@ -75,6 +75,10 @@ class Button {
     this.stage.addChild(this.button)
     func()
   }
+
+  setText (text) {
+    this.text.text = text
+  }
 }
 
 module.exports = Button
