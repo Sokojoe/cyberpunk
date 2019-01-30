@@ -27,7 +27,6 @@ class BattleRoom extends Room {
     this.sessions = {}
     this.timeOut = Math.floor(Date.now() / 1000) + turnTimeout
     setTimeout(() => this.executeTurn(), turnTimeout * 1000)
-    console.log(this.timeOut)
     this.setState({
       entities: {},
       map: rooms['startRoom']
@@ -56,11 +55,10 @@ class BattleRoom extends Room {
     const entityId = this.sessions[client.auth.username].entityId
     delete this.sessions[client.auth.username]
     delete this.state.entities[entityId]
-    console.log(client.id + ' has left')
+    console.log(client.auth.username + ' has left')
   }
 
   onMessage (client, data) {
-    console.log(data)
     if (data.turnSet) {
       this.sessions[client.auth.username].turnSet = data.turnSet
       this.sessions[client.auth.username].ready = true
@@ -78,7 +76,6 @@ class BattleRoom extends Room {
     clearTimeout(this.timerFunc)
     const currTime = Math.floor(Date.now() / 1000)
     this.timeOut = currTime + turnTimeout
-    console.log(this.sessions)
     // Move all entities
     const turnSet = {}
     const entityDesiredMoves = {}
@@ -126,6 +123,7 @@ class BattleRoom extends Room {
       this.sessions[key].turnSet = null
     }
     this.timerFunc = setTimeout(() => this.executeTurn(), (turnTimeout * 1000))
+    console.log('Turn Executed')
   }
 }
 
