@@ -4,12 +4,10 @@ const AuthController = require('../authentication')
 const Player = require('../../game/entitys/player')
 const Zombie = require('../../game/entitys/zombie')
 const Coordinate = require('../../game/tiles/coordinate')
-const moveValidator = require('../../game/validators/moveValidator')
-const attackValidator = require('../../game/validators/attackValidator')
 const moveAlgorith = require('../../game/ai/move-algorithms')
 const turnEngine = require('../../game/logic/turn-engine')
 
-const turnTimeout = 15
+const turnTimeout = 5000
 
 class BattleRoom extends Room {
   onAuth (options, test) {
@@ -46,7 +44,7 @@ class BattleRoom extends Room {
       entityId: player.id,
       turnSet: null
     }
-    this.send(client, { turnSet: calculateTurnSet(player, this.state.map) })
+    this.send(client, { turnInfo: { player: player, map: this.state.map } })
     this.state.entities[player.id] = player
     console.log(client.auth.username + ' has connected')
   }
@@ -114,7 +112,7 @@ class BattleRoom extends Room {
     for (const key in this.clients) {
       const client = this.clients[key]
       const player = this.state.entities[this.sessions[client.auth.username].entityId]
-      this.send(client, { turnSet: calculateTurnSet(player, this.state.map) })
+      this.send(client, { turnInfo: { player: player, map: this.state.map } })
     }
 
     // Set all sessions for next round
@@ -123,7 +121,6 @@ class BattleRoom extends Room {
       this.sessions[key].turnSet = null
     }
     this.timerFunc = setTimeout(() => this.executeTurn(), (turnTimeout * 1000))
-    console.log('Turn Executed')
   }
 }
 
@@ -135,14 +132,6 @@ function allPlayersReady (sessions) {
     }
   }
   return true
-}
-
-function calculateTurnSet (entity, map) {
-  const turnSet = {}
-  turnSet.validMoves = moveValidator.calculateMoveSet(entity, map)
-  turnSet.validAttacks = attackValidator.calculateValidAttackSet(entity, map)
-  turnSet.position = entity.position
-  return turnSet
 }
 
 module.exports = BattleRoom

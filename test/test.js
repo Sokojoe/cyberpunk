@@ -136,6 +136,20 @@ test('coordinate-isSame-different', t => {
   t.is(Coordinate.isSame(a, b), false)
 })
 
+test('coordinate-addCoodinates-simple', t => {
+  const a = new Coordinate(0, 1)
+  const b = new Coordinate(1, 2)
+  const c = Coordinate.addCoodinates(a, b)
+  t.deepEqual(c, new Coordinate(1, 3))
+})
+
+test('coordinate-addCoodinates-negative', t => {
+  const a = new Coordinate(0, 1)
+  const b = new Coordinate(-1, -2)
+  const c = Coordinate.addCoodinates(a, b)
+  t.deepEqual(c, new Coordinate(-1, -1))
+})
+
 test('attackValidator-calculateValidAttackSet-allInMap', t => {
   const player = new Player('Player', new Coordinate(5, 0))
   const room = { width: 10, height: 10 }

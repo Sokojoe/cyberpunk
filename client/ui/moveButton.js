@@ -2,6 +2,7 @@
 
 import Button from './button'
 import MoveSquare from './moveSquare'
+import moveValidator from '../../game/validators/moveValidator'
 
 class MoveButton extends Button {
   constructor (stage, uiManager, playerState, turnSet) {
@@ -17,21 +18,24 @@ class MoveButton extends Button {
 
   setActive () {
     this.setUnActive()
-    super.setActive(() => {
-      for (const key in this.playerState.moveSet) {
-        const move = this.playerState.moveSet[key]
-        this.moveSquares.push(new MoveSquare(
-          this.stage,
-          move,
-          this.playerState.position,
-          this.turnSet,
-          () => {
-            this.uiManager.setNextActive()
-          }
-        )
-        )
-      }
-    })
+    if (this.playerState.player && this.playerState.map) {
+      const moveSet = moveValidator.calculateMoveSet(this.playerState.player, this.playerState.map)
+      super.setActive(() => {
+        for (const key in moveSet) {
+          const move = moveSet[key]
+          this.moveSquares.push(new MoveSquare(
+            this.stage,
+            move,
+            this.playerState,
+            this.turnSet,
+            () => {
+              this.uiManager.setNextActive()
+            }
+          )
+          )
+        }
+      })
+    }
   }
 
   setUnActive () {

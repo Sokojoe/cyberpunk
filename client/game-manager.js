@@ -30,18 +30,15 @@ class GameManager {
       if (change.operation === 'add') {
         if (checkIfEntityPlayer(window.localStorage.getItem('username'), change.value)) {
           this.playerId = change.value.id
-          console.log(`Found player: ${change.value.name} with id = ${change.value.id}`)
         }
         this.view.renderEntity(change.value)
       }
     })
 
     room.onMessage.add((change) => {
-      console.log(change)
-      if (change.turnSet) {
-        this.uiState.moveSet = change.turnSet.validMoves
-        this.uiState.attackSet = change.turnSet.validAttacks
-        this.uiState.position = change.turnSet.position
+      if (change.turnInfo) {
+        this.uiState.player = change.turnInfo.player
+        this.uiState.map = change.turnInfo.map
         this.uiManager.reset()
       }
       if (change.newTurn) {
