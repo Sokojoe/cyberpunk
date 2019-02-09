@@ -6,6 +6,7 @@ const Zombie = require('../../game/entitys/zombie')
 const Coordinate = require('../../game/tiles/coordinate')
 const moveAlgorith = require('../../game/ai/move-algorithms')
 const turnEngine = require('../../game/logic/turn-engine')
+const attackEngine = require('../../game/logic/attack-engine')
 
 const turnTimeout = 5000
 
@@ -74,9 +75,10 @@ class BattleRoom extends Room {
     clearTimeout(this.timerFunc)
     const currTime = Math.floor(Date.now() / 1000)
     this.timeOut = currTime + turnTimeout
-    // Move all entities
-    const turnSet = {}
+    // Calculate desired move location for all entities
+    const turnSet = { moveSet: {} }
     const entityDesiredMoves = {}
+    const entityAttacks = []
     for (const key in this.state.entities) {
       const entity = this.state.entities[key]
       if (entity.type !== 'Player') {
@@ -86,18 +88,31 @@ class BattleRoom extends Room {
           this.state.map
         )
       } else {
+        // Add the desired move location for players
         entityDesiredMoves[entity.id] = entity.position
         if (this.sessions[entity.name].turnSet) {
           if (this.sessions[entity.name].turnSet.move) {
             entityDesiredMoves[entity.id] = entity.position.apply(this.sessions[entity.name].turnSet.move)
           }
         }
+        // Add the attack for players
+        const attackAttempt = {
+          attack: this.sessions[entity.name].turnSet.attack,
+          attacker: this.state.entities[entity.id]
+        }
+        entityAttacks.push(attackAttempt)
       }
     }
+    // Move all the entities, using the turn Engine
     turnEngine(this.state.map, this.state.entities, entityDesiredMoves)
+
+    // Calculate all attacks
+    turnSet.attackSet = attackEngine(this.state.map, this.state.entities, entityAttacks)
+
+    // Add entities new locations to the turnSet.
     for (const key in this.state.entities) {
       const entity = this.state.entities[key]
-      turnSet[key] = {
+      turnSet.moveSet[key] = {
         position: entity.position,
         name: entity.name,
         type: entity.type,
