@@ -10,6 +10,7 @@ function processAttacks (room, entities, entityAttacks) {
   return entityAttacks.map(attempt => {
     return {
       // Calculate if the attack hits anything
+      turn: 'action',
       targets: calculateAttack(attempt, entities),
       attack: attempt.attack,
       attacker: attempt.attacker

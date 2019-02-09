@@ -31,8 +31,8 @@ class BattleRoom extends Room {
       map: rooms['startRoom']
     })
 
-    const zombie1 = new Zombie('Fred', new Coordinate(3, 9))
-    const zombie2 = new Zombie('Sam', new Coordinate(6, 9))
+    const zombie1 = new Zombie('Sleaze', new Coordinate(3, 9))
+    const zombie2 = new Zombie('Waste', new Coordinate(6, 9))
     this.state.entities[zombie1.id] = zombie1
     this.state.entities[zombie2.id] = zombie2
   }
@@ -45,7 +45,7 @@ class BattleRoom extends Room {
       entityId: player.id,
       turnSet: null
     }
-    this.send(client, { turnInfo: { player: player, map: this.state.map } })
+    this.send(client, { turnInfo: { player: player, map: this.state.map, join: true } })
     this.state.entities[player.id] = player
     console.log(client.auth.username + ' has connected')
   }
@@ -76,7 +76,7 @@ class BattleRoom extends Room {
     const currTime = Math.floor(Date.now() / 1000)
     this.timeOut = currTime + turnTimeout
     // Calculate desired move location for all entities
-    const turnSet = { moveSet: {} }
+    let turnSet = []
     const entityDesiredMoves = {}
     const entityAttacks = []
     for (const key in this.state.entities) {
@@ -106,19 +106,21 @@ class BattleRoom extends Room {
     // Move all the entities, using the turn Engine
     turnEngine(this.state.map, this.state.entities, entityDesiredMoves)
 
-    // Calculate all attacks
-    turnSet.attackSet = attackEngine(this.state.map, this.state.entities, entityAttacks)
-
     // Add entities new locations to the turnSet.
     for (const key in this.state.entities) {
       const entity = this.state.entities[key]
-      turnSet.moveSet[key] = {
+      turnSet.push({
+        turn: 'move',
         position: entity.position,
         name: entity.name,
         type: entity.type,
         id: entity.id
-      }
+      })
     }
+
+    // Calculate all attacks
+    const attempts = attackEngine(this.state.map, this.state.entities, entityAttacks)
+    turnSet = turnSet.concat(attempts)
 
     // Send all players the turnSet
     this.broadcast({ newTurn: turnSet })

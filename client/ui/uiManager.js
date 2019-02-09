@@ -68,6 +68,14 @@ class uiManager {
     this.update()
   }
 
+  hide () {
+    for (const key in this.buttons) {
+      const button = this.buttons[key]
+      button.status = 'hide'
+    }
+    this.update()
+  }
+
   reset () {
     for (const key in this.buttons) {
       const button = this.buttons[key]

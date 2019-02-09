@@ -39,19 +39,27 @@ class GameManager {
       if (change.turnInfo) {
         this.uiState.player = change.turnInfo.player
         this.uiState.map = change.turnInfo.map
-        this.uiManager.reset()
+        if (change.turnInfo.join) {
+          this.uiManager.reset()
+        }
       }
       if (change.newTurn) {
-        for (const key in change.newTurn.moveSet) {
-          const entity = change.newTurn.moveSet[key]
-          this.view.renderEntityTurn(entity)
-        }
-        const attempts = change.newTurn.attackSet
-        attempts.forEach((attempt) => {
-          console.log(`${attempt.attacker.name} attacked (${attempt.attack.x}, ${attempt.attack.y})`)
-          attempt.targets.forEach((attack) => {
-            console.log(`Attack hit ${attack.target.name} for ${attack.damage}. ${attack.target.name} now has ${attack.target.health}/${attack.target.maxHealth} left!`)
+        const events = change.newTurn
+        this.uiManager.hide()
+        events.reduce((promiseChain, currentTask) => {
+          return promiseChain.then(chainResults => {
+            if (currentTask.turn === 'move') {
+              return this.view.renderEntityTurn(currentTask).then(currentResult =>
+                [ ...chainResults, currentResult ]
+              )
+            } else if (currentTask.turn === 'action') {
+              return this.view.renderEntityAction(currentTask).then(currentResult =>
+                [ ...chainResults, currentResult ]
+              )
+            }
           })
+        }, Promise.resolve([])).then(() => {
+          this.uiManager.reset()
         })
       }
     })

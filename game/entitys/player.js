@@ -6,7 +6,7 @@ class Player extends Entity {
   constructor (name, position) {
     super(name, 100, position)
     this.type = 'Player'
-    this.weapon = 'PreserverMachete'
+    this.weapon = 'PreserverRifle'
     this.moveSet = [
       new Coordinate(2, 0),
       new Coordinate(1, -1),
