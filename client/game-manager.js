@@ -30,25 +30,37 @@ class GameManager {
       if (change.operation === 'add') {
         if (checkIfEntityPlayer(window.localStorage.getItem('username'), change.value)) {
           this.playerId = change.value.id
-          console.log(`Found player: ${change.value.name} with id = ${change.value.id}`)
         }
         this.view.renderEntity(change.value)
       }
     })
 
     room.onMessage.add((change) => {
-      console.log(change)
-      if (change.turnSet) {
-        this.uiState.moveSet = change.turnSet.validMoves
-        this.uiState.attackSet = change.turnSet.validAttacks
-        this.uiState.position = change.turnSet.position
-        this.uiManager.reset()
+      if (change.turnInfo) {
+        this.uiState.player = change.turnInfo.player
+        this.uiState.map = change.turnInfo.map
+        if (change.turnInfo.join) {
+          this.uiManager.reset()
+        }
       }
       if (change.newTurn) {
-        for (const key in change.newTurn) {
-          const entity = change.newTurn[key]
-          this.view.renderEntityTurn(entity)
-        }
+        const events = change.newTurn
+        this.uiManager.hide()
+        events.reduce((promiseChain, currentTask) => {
+          return promiseChain.then(chainResults => {
+            if (currentTask.turn === 'move') {
+              return this.view.renderEntityTurn(currentTask).then(currentResult =>
+                [ ...chainResults, currentResult ]
+              )
+            } else if (currentTask.turn === 'action') {
+              return this.view.renderEntityAction(currentTask).then(currentResult =>
+                [ ...chainResults, currentResult ]
+              )
+            }
+          })
+        }, Promise.resolve([])).then(() => {
+          this.uiManager.reset()
+        })
       }
     })
 

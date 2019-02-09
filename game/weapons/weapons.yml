@@ -39,7 +39,22 @@ Weapons:
       - x: -3
         y: 0
         attackPattern: *star
-    damage: 25
+      - x: 2
+        y: -1
+        attackPattern: *star
+      - x: 1
+        y: -2
+        attackPattern: *star
+      - x: 0
+        y: -3
+        attackPattern: *star
+      - x: -1
+        y: -2
+        attackPattern: *star
+      - x: -2
+        y: -1
+        attackPattern: *star
+    damage: 10
 
   PreserverMachete:
     name: Preserver Machete

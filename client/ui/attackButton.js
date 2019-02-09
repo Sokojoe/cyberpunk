@@ -2,6 +2,7 @@
 
 import Button from './button'
 import AttackSquare from './attackSquare'
+import attackValidator from '../../game/validators/attackValidator'
 
 class AttackButton extends Button {
   constructor (stage, uiManager, playerState, turnSet) {
@@ -18,13 +19,17 @@ class AttackButton extends Button {
 
   setActive () {
     this.setUnActive()
+    const attackSet = attackValidator.calculateValidAttackSet({
+      position: this.playerState.nextPos,
+      weapon: this.playerState.player.weapon },
+    this.playerState.map)
     super.setActive(() => {
-      for (const key in this.playerState.attackSet) {
-        const attack = this.playerState.attackSet[key]
+      for (const key in attackSet) {
+        const attack = attackSet[key]
         this.attackSquares.push(new AttackSquare(
           this.stage,
           attack,
-          this.playerState.position,
+          this.playerState.nextPos,
           this.turnSet,
           () => {
             this.uiManager.setNextActive()

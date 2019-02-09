@@ -4,12 +4,11 @@ const AuthController = require('../authentication')
 const Player = require('../../game/entitys/player')
 const Zombie = require('../../game/entitys/zombie')
 const Coordinate = require('../../game/tiles/coordinate')
-const moveValidator = require('../../game/validators/moveValidator')
-const attackValidator = require('../../game/validators/attackValidator')
 const moveAlgorith = require('../../game/ai/move-algorithms')
 const turnEngine = require('../../game/logic/turn-engine')
+const attackEngine = require('../../game/logic/attack-engine')
 
-const turnTimeout = 15
+const turnTimeout = 5000
 
 class BattleRoom extends Room {
   onAuth (options, test) {
@@ -27,14 +26,13 @@ class BattleRoom extends Room {
     this.sessions = {}
     this.timeOut = Math.floor(Date.now() / 1000) + turnTimeout
     setTimeout(() => this.executeTurn(), turnTimeout * 1000)
-    console.log(this.timeOut)
     this.setState({
       entities: {},
       map: rooms['startRoom']
     })
 
-    const zombie1 = new Zombie('Fred', new Coordinate(3, 9))
-    const zombie2 = new Zombie('Sam', new Coordinate(6, 9))
+    const zombie1 = new Zombie('Sleaze', new Coordinate(3, 9))
+    const zombie2 = new Zombie('Waste', new Coordinate(6, 9))
     this.state.entities[zombie1.id] = zombie1
     this.state.entities[zombie2.id] = zombie2
   }
@@ -47,7 +45,7 @@ class BattleRoom extends Room {
       entityId: player.id,
       turnSet: null
     }
-    this.send(client, { turnSet: calculateTurnSet(player, this.state.map) })
+    this.send(client, { turnInfo: { player: player, map: this.state.map, join: true } })
     this.state.entities[player.id] = player
     console.log(client.auth.username + ' has connected')
   }
@@ -56,11 +54,10 @@ class BattleRoom extends Room {
     const entityId = this.sessions[client.auth.username].entityId
     delete this.sessions[client.auth.username]
     delete this.state.entities[entityId]
-    console.log(client.id + ' has left')
+    console.log(client.auth.username + ' has left')
   }
 
   onMessage (client, data) {
-    console.log(data)
     if (data.turnSet) {
       this.sessions[client.auth.username].turnSet = data.turnSet
       this.sessions[client.auth.username].ready = true
@@ -78,10 +75,10 @@ class BattleRoom extends Room {
     clearTimeout(this.timerFunc)
     const currTime = Math.floor(Date.now() / 1000)
     this.timeOut = currTime + turnTimeout
-    console.log(this.sessions)
-    // Move all entities
-    const turnSet = {}
+    // Calculate desired move location for all entities
+    let turnSet = []
     const entityDesiredMoves = {}
+    const entityAttacks = []
     for (const key in this.state.entities) {
       const entity = this.state.entities[key]
       if (entity.type !== 'Player') {
@@ -91,24 +88,39 @@ class BattleRoom extends Room {
           this.state.map
         )
       } else {
+        // Add the desired move location for players
         entityDesiredMoves[entity.id] = entity.position
         if (this.sessions[entity.name].turnSet) {
           if (this.sessions[entity.name].turnSet.move) {
             entityDesiredMoves[entity.id] = entity.position.apply(this.sessions[entity.name].turnSet.move)
           }
         }
+        // Add the attack for players
+        const attackAttempt = {
+          attack: this.sessions[entity.name].turnSet.attack,
+          attacker: this.state.entities[entity.id]
+        }
+        entityAttacks.push(attackAttempt)
       }
     }
+    // Move all the entities, using the turn Engine
     turnEngine(this.state.map, this.state.entities, entityDesiredMoves)
+
+    // Add entities new locations to the turnSet.
     for (const key in this.state.entities) {
       const entity = this.state.entities[key]
-      turnSet[key] = {
+      turnSet.push({
+        turn: 'move',
         position: entity.position,
         name: entity.name,
         type: entity.type,
         id: entity.id
-      }
+      })
     }
+
+    // Calculate all attacks
+    const attempts = attackEngine(this.state.map, this.state.entities, entityAttacks)
+    turnSet = turnSet.concat(attempts)
 
     // Send all players the turnSet
     this.broadcast({ newTurn: turnSet })
@@ -117,7 +129,7 @@ class BattleRoom extends Room {
     for (const key in this.clients) {
       const client = this.clients[key]
       const player = this.state.entities[this.sessions[client.auth.username].entityId]
-      this.send(client, { turnSet: calculateTurnSet(player, this.state.map) })
+      this.send(client, { turnInfo: { player: player, map: this.state.map } })
     }
 
     // Set all sessions for next round
@@ -137,14 +149,6 @@ function allPlayersReady (sessions) {
     }
   }
   return true
-}
-
-function calculateTurnSet (entity, map) {
-  const turnSet = {}
-  turnSet.validMoves = moveValidator.calculateMoveSet(entity, map)
-  turnSet.validAttacks = attackValidator.calculateValidAttackSet(entity, map)
-  turnSet.position = entity.position
-  return turnSet
 }
 
 module.exports = BattleRoom

@@ -16,6 +16,10 @@ class Coordinate {
     }
   }
 
+  static addCoodinates (coordinate1, coordinate2) {
+    return new Coordinate(coordinate1.x + coordinate2.x, coordinate1.y + coordinate2.y)
+  }
+
   apply (coordinate) {
     return new Coordinate(this.x + coordinate.x, this.y + coordinate.y)
   }

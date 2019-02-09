@@ -2,12 +2,14 @@ import * as PIXI from 'pixi.js'
 import playerSprite from './resources/sprites/Player.png'
 import zombieSprite from './resources/sprites/Zombie.png'
 import tile from './resources/sprites/floor.png'
+import AttackPatternSquare from './ui/attackPatternSquare.js'
+import Coordinate from '../game/tiles/coordinate.js'
 
 const TILE_SIZE = 64
 
 class View {
   constructor () {
-    this.app = new PIXI.Application({ width: 1400, height: 900 })
+    this.app = new PIXI.Application({ width: 640, height: 704 })
 
     const canvasLocation = document.getElementById('pixiCanvas')
     canvasLocation.appendChild(this.app.view)
@@ -40,17 +42,6 @@ class View {
     this.mapContainer = container
   }
 
-  renderEntitiesTurn (entities) {
-    for (const key in entities) {
-      const entity = entities[key]
-      this.renderEntityTurn(entity)
-      console.log(entity.name + ' moved to (' + entity.position.x + ', ' + entity.position.y + ')')
-      if (entity.type === 'Player') {
-        this.player = entity
-      }
-    }
-  }
-
   renderEntity (entity) {
     this.app.stage.removeChild(this.entitySprites[entity.id])
 
@@ -73,16 +64,43 @@ class View {
 
   renderEntityTurn (entity) {
     const sprite = this.entitySprites[entity.id]
-    return this.tweenSprite(sprite, entity.position, 600)
+    // console.log(`${entity.name} moved to (${entity.position.x}, ${entity.position.y}).`)
+    return this.tweenSprite(sprite, entity.position, 400)
+  }
+
+  renderEntityAction (action) {
+    const sprite = this.entitySprites[action.attacker.id]
+    // console.log(`${action.attacker.name} attacked (${action.attack.x}, ${action.attack.y}).`)
+    action.targets.forEach((attack) => {
+      console.log(`Attack hit ${attack.target.name} for ${attack.damage}. ${attack.target.name} now has ${attack.target.health}/${attack.target.maxHealth} left!`)
+    })
+
+    return new Promise((resolve, reject) => {
+      const attackIndicator = action.attack.attackPattern.map((square) => {
+        const targetSquare = Coordinate.addCoodinates(square, { x: action.attack.x, y: action.attack.y })
+        return new AttackPatternSquare(this.app.stage, targetSquare, action.attacker.position)
+      })
+      this.bounceSprite(sprite).then(() => {
+        attackIndicator.forEach(attackSquare => attackSquare.remove())
+        resolve()
+      })
+    })
   }
 
   tweenSprite (sprite, coordinates, time) {
+    const destinationX = (TILE_SIZE * coordinates.x) - sprite.x
+    const destinationY = sprite.y - (this.room.height - 1 - coordinates.y) * TILE_SIZE
+    const position = { x: destinationX, y: destinationY }
+    return this.moveSprite(sprite, position, time)
+  }
+
+  moveSprite (sprite, position, time) {
     const ticker = this.app.ticker
     let currentTime = 0
     const originalX = sprite.x
     const originalY = sprite.y
-    const destinationX = TILE_SIZE * coordinates.x
-    const destinationY = (this.room.height - 1 - coordinates.y) * TILE_SIZE
+    const destinationX = sprite.x + position.x
+    const destinationY = sprite.y - position.y
     return new Promise((resolve, reject) => {
       function tween () {
         currentTime = currentTime + ticker.elapsedMS
@@ -99,5 +117,16 @@ class View {
       ticker.add(tween)
     })
   }
+
+  bounceSprite (sprite) {
+    return new Promise((resolve, reject) => {
+      this.moveSprite(sprite, { x: 0, y: 30 }, 150).then(
+        () => {
+          this.moveSprite(sprite, { x: 0, y: -30 }, 150).then(() => resolve())
+        }
+      )
+    })
+  }
 }
+
 module.exports = View
