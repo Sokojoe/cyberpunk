@@ -90,7 +90,6 @@ class LoginBar extends React.Component {
         this.props.login()
         return true
       }).catch(() => {
-        window.localStorage.removeItem('authKey')
         return false
       })
     }
