@@ -1,7 +1,5 @@
-import loginManager from './login.js'
-import GameManager from './game-manager'
-import View from './pixi'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './components/App'
 
-const view = new View()
-const gameManager = new GameManager(view)
-loginManager.initializePage(gameManager)
+ReactDOM.render(<App />, document.getElementById('root'))

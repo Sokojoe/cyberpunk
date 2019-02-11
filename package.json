@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node server/server.js",
     "build": "parcel build ./client/index.html --public-url /static --out-dir static",
+    "devbuild": "parcel watch ./client/index.html --public-url /static --out-dir static",
     "fix": "standard --fix",
     "test": "ava && yarn standard && yarn build"
   },
@@ -28,10 +29,14 @@
   "devDependencies": {
     "ava": "^0.25.0",
     "axios": "^0.18.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
     "colyseus.js": "^0.9.15",
     "husky": "^1.1.2",
     "parcel-bundler": "^1.9.7",
     "pixi.js": "^4.8.2",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
     "standard": "^12.0.1"
   }
 }

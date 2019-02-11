@@ -51,8 +51,13 @@ router.post('/login', function (req, res) {
   })
 })
 
+router.get('/authenticated', verifyToken, function (req, res) {
+  res.status(200).send({ auth: true, token: req.token })
+})
+
 function verifyToken (req, res, next) {
   const token = req.headers['authtoken']
+  req.token = token
   if (!token) { return res.status(403).send({ auth: false, message: 'No token provided.' }) }
 
   tokenValid(token).then((decoded) => {
