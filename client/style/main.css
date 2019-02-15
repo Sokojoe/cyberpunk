@@ -1,0 +1,69 @@
+html {
+  height: 100%;
+}
+
+body{
+  background-image: linear-gradient( black 0%, #434343 100%);
+  color: azure;
+  font-family: 'Roboto', sans-serif;
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+}
+
+input[type=submit]	 {
+  cursor: pointer;
+}
+
+.login {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center; 
+  width: 600px;
+  background-color: whitesmoke;
+  color: #434343;
+  padding: 10px;
+}
+
+.loginBoxHeader {
+  text-align: center;
+}
+
+.loginBox input {
+  padding: 10px;
+  margin: 10px;
+}
+
+.darkButton {
+  border: 0px;
+  color: whitesmoke;
+  background-color: black;
+}
+
+.error {
+  color: red;
+  height: 25px;
+  margin: 10px;
+}
+
+.logout {
+  display: flex;
+  background-color: black;
+  justify-content: space-between;
+  border-bottom: 1px solid whitesmoke;
+}
+
+.view {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}

@@ -6,38 +6,29 @@ class LoginBar extends React.Component {
     super(props)
 
     this.state = {
-      username: this.getUsername(),
+      username: '',
       password: '',
-      error: '',
-      authenticated: this.isAuthenticated()
+      error: ''
     }
 
     this.handlePassChange = this.handlePassChange.bind(this)
     this.handleUserChange = this.handleUserChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.dismissError = this.dismissError.bind(this)
-    this.logOut = this.logOut.bind(this)
   }
 
   render () {
-    if (this.state.authenticated === false) {
-      return (<div>
-        <form onSubmit={this.handleSubmit}>
-          <label>Username:</label>
-          <input type='text' id='username' value={this.state.username} onChange={this.handleUserChange} />
-          <label>Password:</label>
-          <input type='password' id='password' value={this.state.password} onChange={this.handlePassChange} />
-          <input type='submit' id='loginButton' />
-          <h3 className='error'>
-            {this.state.error}
-          </h3>
-        </form>
-      </div>)
-    } else {
-      return (<div><p>Currently logged in as: {this.state.username}</p>
-        <button value='Logout' onClick={this.logOut}>Logout</button>
-      </div>)
-    }
+    return (<div className='login'>
+      <form onSubmit={this.handleSubmit} className='loginBox ui'>
+        <h1 className='loginBoxHeader'>Cyberpunk</h1>
+        <input type='text' id='username' value={this.state.username} onChange={this.handleUserChange} placeholder='Username' />
+        <input type='password' id='password' value={this.state.password} onChange={this.handlePassChange} placeholder='Password' />
+        <h3 className='error'>
+          {this.state.error}
+        </h3>
+        <input className='darkButton' type='submit' id='loginButton' value='Sign In' />
+      </form>
+    </div>)
   }
 
   handleUserChange (event) {
@@ -70,7 +61,6 @@ class LoginBar extends React.Component {
       const authKey = res.data.token
       window.localStorage.setItem('authKey', authKey)
       window.localStorage.setItem('username', this.state.username)
-      this.setState({ authenticated: true })
       this.props.login()
     }).catch(() => {
       this.setState({ error: 'Login Failed' })
@@ -79,35 +69,6 @@ class LoginBar extends React.Component {
 
   dismissError () {
     this.setState({ error: '' })
-  }
-
-  isAuthenticated () {
-    const token = window.localStorage.getItem('authKey')
-    if (!token) return false
-    else {
-      const url = window.location.origin + window.location.pathname + 'api/auth/authenticated'
-      axios.get(url, { headers: { authtoken: token } }).then((res) => {
-        this.props.login()
-        return true
-      }).catch(() => {
-        return false
-      })
-    }
-  }
-
-  logOut () {
-    window.localStorage.removeItem('authKey')
-    window.localStorage.removeItem('username')
-    this.props.logout()
-    this.setState({ authenticated: false })
-  }
-
-  getUsername () {
-    const username = window.localStorage.getItem('username')
-    if (username === null) {
-      return ''
-    }
-    return username
   }
 }
 
