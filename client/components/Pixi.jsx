@@ -15,7 +15,7 @@ class Pixi extends React.Component {
   render () {
     let component = this
     return (
-      <div className="view" ref={(thisDiv) => { component.gameCanvas = thisDiv }} />
+      <div className='view' ref={(thisDiv) => { component.gameCanvas = thisDiv }} />
     )
   }
 }

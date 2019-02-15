@@ -30,7 +30,7 @@ class App extends React.Component {
           <LoginBar login={() => this.isAuthenticated()} />
         </div>
       )
-    } 
+    }
   }
 
   isAuthenticated () {
