@@ -9,11 +9,7 @@ const TILE_SIZE = 64
 
 class View {
   constructor () {
-    this.app = new PIXI.Application({ width: 640, height: 704 })
-
-    const canvasLocation = document.getElementById('pixiCanvas')
-    canvasLocation.appendChild(this.app.view)
-
+    this.app = new PIXI.Application({ width: 640, height: 704, transparent: true })
     this.entitySprites = {}
   }
 
