@@ -12,6 +12,10 @@ class Pixi extends React.Component {
     this.gameCanvas.appendChild(this.app.view)
   }
 
+  componentWillUnmount () {
+    this.gameManager.disconnect()
+  }
+
   render () {
     let component = this
     return (

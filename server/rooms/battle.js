@@ -11,9 +11,10 @@ const attackEngine = require('../../game/logic/attack-engine')
 const turnTimeout = 5000
 
 class BattleRoom extends Room {
-  onAuth (options, test) {
+  onAuth (options) {
     return new Promise((resolve, reject) => {
       AuthController.tokenValid(options.authtoken).then((decoded) => {
+        if (this.sessions[decoded.username]) reject(new Error('User already connected.'))
         resolve(decoded)
       }).catch((err) => {
         reject(err)
