@@ -9,16 +9,17 @@ class GameManager {
     this.uiManager = {}
     this.playerId = null
     this.uiState = {}
+    this.room = {}
   }
 
   loadGame (authtoken) {
     this.authtoken = authtoken
 
     let client = new Colyseus.Client(`ws://${window.location.host}`)
-    const room = client.join('battle', { authtoken: authtoken })
+    this.room = client.join('battle', { authtoken: authtoken })
     this.uiManager = new UiManager(this.view.app.stage, this.uiState, (turnSet) => sendTurn(turnSet))
 
-    room.listen(':new', (change) => {
+    this.room.listen(':new', (change) => {
       if (change.operation === 'add') {
         if (change.path.new === 'map') {
           this.view.renderRoom(change.value)
@@ -26,7 +27,7 @@ class GameManager {
       }
     })
 
-    room.listen('entities/:entity', (change) => {
+    this.room.listen('entities/:entity', (change) => {
       if (change.operation === 'add') {
         if (checkIfEntityPlayer(window.localStorage.getItem('username'), change.value)) {
           this.playerId = change.value.id
@@ -35,7 +36,7 @@ class GameManager {
       }
     })
 
-    room.onMessage.add((change) => {
+    this.room.onMessage.add((change) => {
       if (change.turnInfo) {
         this.uiState.player = change.turnInfo.player
         this.uiState.map = change.turnInfo.map
@@ -65,8 +66,12 @@ class GameManager {
     })
 
     const sendTurn = (turnSet) => {
-      room.send({ turnSet: turnSet })
+      this.room.send({ turnSet: turnSet })
     }
+  }
+
+  disconnect () {
+    this.room.leave()
   }
 }
 
