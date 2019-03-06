@@ -32,8 +32,8 @@ class BattleRoom extends Room {
       map: rooms['startRoom']
     })
 
-    const zombie1 = new Zombie('Sleaze', new Coordinate(3, 9))
-    const zombie2 = new Zombie('Waste', new Coordinate(6, 9))
+    const zombie1 = new Zombie('Zombie', new Coordinate(3, 9))
+    const zombie2 = new Zombie('Zombie', new Coordinate(6, 9))
     this.state.entities[zombie1.id] = zombie1
     this.state.entities[zombie2.id] = zombie2
   }
