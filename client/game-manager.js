@@ -1,6 +1,6 @@
 'use strict'
 
-import UiManager from './ui/uiManager'
+import UiManager from './pixi-ui/uiManager'
 import * as Colyseus from 'colyseus.js'
 
 class GameManager {

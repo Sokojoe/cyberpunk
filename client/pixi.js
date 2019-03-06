@@ -1,9 +1,8 @@
 import * as PIXI from 'pixi.js'
-import playerSprite from './resources/sprites/Player.png'
-import zombieSprite from './resources/sprites/Zombie.png'
 import tile from './resources/sprites/floor.png'
-import AttackPatternSquare from './ui/attackPatternSquare.js'
+import AttackPatternSquare from './pixi-ui/attackPatternSquare.js'
 import Coordinate from '../game/tiles/coordinate.js'
+import EntitySprite from './pixi-ui/entitySprite'
 
 const TILE_SIZE = 64
 
@@ -41,21 +40,9 @@ class View {
   renderEntity (entity) {
     this.app.stage.removeChild(this.entitySprites[entity.id])
 
-    let sprite
-    if (entity.type === 'Player') {
-      sprite = PIXI.Sprite.fromImage(playerSprite, false)
-      this.player = entity
-    } else if (entity.type === 'Zombie') {
-      sprite = PIXI.Sprite.fromImage(zombieSprite, false)
-    }
-
-    sprite.height = TILE_SIZE
-    sprite.width = TILE_SIZE
-    sprite.x = TILE_SIZE * entity.position.x
-    sprite.y = (this.room.height - 1 - entity.position.y) * TILE_SIZE
-    this.app.stage.addChild(sprite)
-
-    this.entitySprites[entity.id] = sprite
+    const entitySprite = new EntitySprite(entity, this.room.height)
+    this.app.stage.addChild(entitySprite)
+    this.entitySprites[entity.id] = entitySprite
   }
 
   renderEntityTurn (entity) {
