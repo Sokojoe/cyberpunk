@@ -55,6 +55,7 @@ class View {
     const sprite = this.entitySprites[action.attacker.id]
     // console.log(`${action.attacker.name} attacked (${action.attack.x}, ${action.attack.y}).`)
     action.targets.forEach((attack) => {
+      this.entitySprites[attack.target.id].renderHealth(attack.target.health, attack.target.maxHealth)
       console.log(`Attack hit ${attack.target.name} for ${attack.damage}. ${attack.target.name} now has ${attack.target.health}/${attack.target.maxHealth} left!`)
     })
 
