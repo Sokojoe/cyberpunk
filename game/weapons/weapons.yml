@@ -13,6 +13,50 @@ AttackPatterns:
       y: 1
     - x: 0
       y: -1
+  t_up: &t_up
+    - x: 0
+      y: 0
+    - x: 0
+      y: 1
+    - x: 0
+      y: 2
+    - x: 1
+      y: 2
+    - x: -1
+      y: 2
+  t_left: &t_left
+    - x: 0
+      y: 0
+    - x: -1
+      y: 0
+    - x: -2
+      y: 0
+    - x: -2
+      y: -1
+    - x: -2
+      y: 1
+  t_right: &t_right
+    - x: 0
+      y: 0
+    - x: 1
+      y: 0
+    - x: 2
+      y: 0
+    - x: 2
+      y: -1
+    - x: 2
+      y: 1
+  t_down: &t_down
+    - x: 0
+      y: 0
+    - x: 0
+      y: -1
+    - x: 0
+      y: -2
+    - x: 1
+      y: -2
+    - x: -1
+      y: -2
 
 Weapons:
   PreserverRifle:
@@ -55,6 +99,82 @@ Weapons:
         y: -1
         attackPattern: *star
     damage: 10
+  EqualizerHandgun:
+    name: Equalizer Handgun
+    damage: 10
+    attackSet:
+      - x: -1
+        y: 2
+        attackPattern: *t_up
+      - x: 0
+        y: 2
+        attackPattern: *t_up
+      - x: 1
+        y: 2
+        attackPattern: *t_up
+      - x: -1
+        y: 3
+        attackPattern: *t_up
+      - x: 0
+        y: 3
+        attackPattern: *t_up
+      - x: 1
+        y: 3
+        attackPattern: *t_up
+      - x: -2
+        y: 1
+        attackPattern: *t_left
+      - x: -2
+        y: 0
+        attackPattern: *t_left
+      - x: -2
+        y: -1
+        attackPattern: *t_left
+      - x: -3
+        y: 1
+        attackPattern: *t_left
+      - x: -3
+        y: 0
+        attackPattern: *t_left
+      - x: -3
+        y: -1
+        attackPattern: *t_left
+      - x: 2
+        y: 1
+        attackPattern: *t_right
+      - x: 2
+        y: 0
+        attackPattern: *t_right
+      - x: 2
+        y: -1
+        attackPattern: *t_right
+      - x: 3
+        y: 1
+        attackPattern: *t_right
+      - x: 3
+        y: 0
+        attackPattern: *t_right
+      - x: 3
+        y: -1
+        attackPattern: *t_right
+      - x: -1
+        y: -2
+        attackPattern: *t_down
+      - x: 0
+        y: -2
+        attackPattern: *t_down
+      - x: 1
+        y: -2
+        attackPattern: *t_down
+      - x: -1
+        y: -3
+        attackPattern: *t_down
+      - x: 0
+        y: -3
+        attackPattern: *t_down
+      - x: 1
+        y: -3
+        attackPattern: *t_down
 
   PreserverMachete:
     name: Preserver Machete
